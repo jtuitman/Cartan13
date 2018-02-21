@@ -538,6 +538,52 @@ frobenius_pt:=function(P,data);
 end function;
 
 
+teichmueller_pt:=function(P,data)
+
+  // Compute the Teichmueller point in the residue disk at a good point P
+
+  x0:=P`x; Q:=data`Q; p:=data`p; N:=data`N; W0:=data`W0; Winf:=data`Winf;
+  d:=Degree(Q); K:=Parent(x0); Ky:=PolynomialRing(K);
+
+  if is_bad(P,data) then
+    error "Point is bad";
+  end if;
+
+  x0new:=K!TeichmuellerLift(FiniteField(p)!x0,pAdicQuotientRing(p,N)); 
+  b:=P`b; 
+  W0invx0:=Transpose(Evaluate(W0^(-1),x0));
+  ypowers:=Vector(b)*W0invx0;
+  y0:=ypowers[2];
+  
+  C:=Coefficients(Q);
+  D:=[];
+  for i:=1 to #C do
+    D[i]:=Evaluate(C[i],x0new);
+  end for;
+  fy:=Ky!D;
+
+  y0new:=HenselLift(fy,y0); // Hensel lifting
+  y0newpowers:=[];
+  y0newpowers[1]:=K!1;
+  for i:=2 to d do
+    y0newpowers[i]:=y0newpowers[i-1]*y0new;
+  end for;
+  y0newpowers:=Vector(y0newpowers);
+
+  W0x0:=Transpose(Evaluate(W0,x0));
+  b:=y0newpowers*W0x0;
+
+  P`x:=x0new;
+  P`b:=b;
+  delete P`xt;
+  delete P`bt;
+  delete P`index;
+
+  return P;
+
+end function;
+
+
 local_data:=function(P,data)
 
   // For a point P, returns the ramification index of the map x on the residue disk at P
