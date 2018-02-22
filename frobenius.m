@@ -208,6 +208,6 @@ frob_struc:=function(data,Z,eta,bpt,omega,denom)
   end for;
   G[8,8]:=p;
 
-  return G, data;
+  return G;
 end function;
 

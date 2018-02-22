@@ -37,7 +37,7 @@ data:=coleman_data(Q,p,N:useU:=true,b0:=b0,b1:=b1);
 ////////////////////
 
 bound:=1000;
-Qpoints:=Qpoints(data,bound);
+Qpoints:=Q_points(data,bound);
 
 Qppoints:=Qp_points(data); // first 2 points are infinite, last point finite bad, all other points good
 
@@ -58,9 +58,17 @@ end for;
 Z1:=Matrix(RationalField(),6,6,[[0,-976,-1104,10,-6,18],[976,0,-816,-3,1,3],[1104,816,0,-3,3,-11],[-10,3,3,0,0,0],[6,-1,-3,0,0,0],[-18,-3,11,0,0,0]]);
 eta1:=-(132*x^2+148*x*y+24*y^2);
 
-Phi1,data:=frob_struc(data,Z1,eta1,b,omega,denom);
-pt:=[0,0];
-Phi1_at_pt:=eval_mat_R(Phi1,pt,r);
+G1:=frob_struc(data,Z1,eta1,b,omega,denom);
+G1_list:=[**];
+for i:=1 to #Qppoints do
+  if is_bad(Qppoints[i],data) then
+    G1_list[i]:=0;
+  else
+    P:=teichpoints[i];
+    pt:=[IntegerRing()!(P`x),IntegerRing()!(P`b)[2]];
+    G1_list[i]:=eval_mat_R(G1,pt,r);
+  end if;
+end for;
 
 ////////////////////////////
 // second correspondence: //
@@ -70,6 +78,14 @@ Phi1_at_pt:=eval_mat_R(Phi1,pt,r);
 Z2:=Matrix(RationalField(),6,6,[[0,112,-656,-6,6,6],[-112,0,-2576,15,9,27],[656,2576,0,3,3,-3],[6,-15,-3,0,0,0],[-6,-9,-3,0,0,0],[-6,-27,3,0,0,0]]);
 eta2:=3*(-40*x^2+148*x*y+36*y^2);
 
-Phi2,data:=frob_struc(data,Z2,eta2,b,omega,denom);
-pt:=[0,0];
-Phi2_at_pt:=eval_mat_R(Phi2,pt,r);
+G2:=frob_struc(data,Z2,eta2,b,omega,denom);
+G2_list:=[**];
+for i:=1 to #Qppoints do
+  if is_bad(Qppoints[i],data) then
+    G2_list[i]:=0;
+  else
+    P:=teichpoints[i];
+    pt:=[IntegerRing()!(P`x),IntegerRing()!(P`b)[2]];
+    G2_list[i]:=eval_mat_R(G2,pt,r);
+  end if;
+end for;
