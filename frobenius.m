@@ -44,32 +44,17 @@ hecke_corr:=function(Q,q,N,omega,denom)
 end function;
 
 
-frob_struc:=function(Q,p,N,Z,eta,bpt,omega,denom)
+frob_struc:=function(data,Z,eta,bpt,omega,denom)
 
   // compute the matrix of the Frobenius structure Phi on A_Z using the basis for 
   // H^1(X) given by [omega, denom], the matrix Z of a nice correspondence and a
   // 1-form eta w.r.t. this basis.
 
-  r,Delta,s:=auxpolys(Q);
+  Q:=data`Q; p:=data`p; N:=data`N; W0:=data`W0; Winf:=data`Winf; f0list:=data`f0list; finflist:=data`finflist; fendlist:=data`fendlist; 
+  FH1U:=data`F; Nmax:=data`Nmax; basis:=data`basis; G0:=data`G0; Ginf:=data`Ginf; red_list_fin:=data`red_list_fin; red_list_inf:=data`red_list_inf; 
+  basis:=data`basis; integrals:=data`integrals; quo_map:=data`quo_map; r:=data`r; Delta:=data`Delta; s:=data`s;
 
   lc:=LeadingCoefficient(Delta);
-
-  b0:=[];
-  for i:=1 to 3 do
-    b0[i]:=poly_to_vec(reduce_mod_Q_exact(omega[i]*s,Q),13,3); // first kind
-  end for;
-  b1:=[];
-  for i:=1 to 3 do
-    b1[i]:=poly_to_vec(reduce_mod_Q_exact(omega[i+3]*s,Q),13,3); // second kind
-  end for;
-
-  // b0 cat b1 is the basis for H^1(X) given by omega[i]*dx/(dQ/dy), multiplied by denom*lc.
-
-  data:=coleman_data(Q,p,N:useU:=true,b0:=b0,b1:=b1);
-
-  W0:=data`W0; Winf:=data`Winf; f0list:=data`f0list; finflist:=data`finflist; fendlist:=data`fendlist; FH1U:=data`F; Nmax:=data`Nmax; 
-  basis:=data`basis; G0:=data`G0; Ginf:=data`Ginf; red_list_fin:=data`red_list_fin; red_list_inf:=data`red_list_inf; basis:=data`basis; 
-  integrals:=data`integrals; quo_map:=data`quo_map; r:=data`r; Delta:=data`Delta; s:=data`s;
 
   O,Ox,S,R:=getrings(p,data`Nmax); // O = IntegerRing(p^Nmax), Ox = O[x], S = Ox[z,1/z], R = S[y]
 
@@ -129,7 +114,6 @@ frob_struc:=function(Q,p,N,Z,eta,bpt,omega,denom)
   for i:=1 to 6 do
     basisR[i]:=reduce_mod_Q((R![S.1^0*(Ox!c) : c in Coefficients(omega[i])])*sR,QR,zR);  
   end for;
-
 
   // Compute g0*omega:
 
@@ -224,6 +208,6 @@ frob_struc:=function(Q,p,N,Z,eta,bpt,omega,denom)
   end for;
   G[8,8]:=p;
 
-  return G;
+  return G, data;
 end function;
 

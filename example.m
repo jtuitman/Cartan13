@@ -17,7 +17,38 @@ omega[4]:=-160*x^4+736*x^3-16*x^2*y+436*x^2-440*x*y+68*y^2;
 omega[5]:=-80*x^3+132*x^2-40*x*y+68*y^2-96;
 omega[6]:=-48*x^2*y+84*x^2+216*x*y-12*y^2-160*x+272;
 
-denom:=3; // the omega's have to be integral, but a denominator can be specified to make the basis symplectic
+denom:=3; // the omega's have to be integral, but a denominator can be specified
+
+b0:=[];
+for i:=1 to 3 do
+  b0[i]:=poly_to_vec(reduce_mod_Q_exact(omega[i]*s,Q),13,3); // first kind
+end for;
+b1:=[];
+for i:=1 to 3 do
+  b1[i]:=poly_to_vec(reduce_mod_Q_exact(omega[i+3]*s,Q),13,3); // second kind
+end for;
+
+// b0 cat b1 is the basis for H^1(X) given by omega[i]*dx/(dQ/dy), multiplied by denom*LeadingCoefficient(Delta).
+
+data:=coleman_data(Q,p,N:useU:=true,b0:=b0,b1:=b1);
+
+////////////////////
+// list of points //
+////////////////////
+
+bound:=1000;
+Qpoints:=Qpoints(data,bound);
+
+Qppoints:=Qp_points(data); // first 2 points are infinite, last point finite bad, all other points good
+
+teichpoints:=[**]; // compute Teichmueller representatives of good points
+for i:=1 to #Qppoints do
+  if is_bad(Qppoints[i],data) then
+    teichpoints[i]:=0;
+  else
+    teichpoints[i]:=teichmueller_pt(Qppoints[i],data);
+  end if;
+end for;
 
 ///////////////////////////
 // first correspondence: //
@@ -27,7 +58,7 @@ denom:=3; // the omega's have to be integral, but a denominator can be specified
 Z1:=Matrix(RationalField(),6,6,[[0,-976,-1104,10,-6,18],[976,0,-816,-3,1,3],[1104,816,0,-3,3,-11],[-10,3,3,0,0,0],[6,-1,-3,0,0,0],[-18,-3,11,0,0,0]]);
 eta1:=-(132*x^2+148*x*y+24*y^2);
 
-Phi1:=frob_struc(Q,p,N,Z1,eta1,b,omega,denom);
+Phi1,data:=frob_struc(data,Z1,eta1,b,omega,denom);
 pt:=[0,0];
 Phi1_at_pt:=eval_mat_R(Phi1,pt,r);
 
@@ -39,6 +70,6 @@ Phi1_at_pt:=eval_mat_R(Phi1,pt,r);
 Z2:=Matrix(RationalField(),6,6,[[0,112,-656,-6,6,6],[-112,0,-2576,15,9,27],[656,2576,0,3,3,-3],[6,-15,-3,0,0,0],[-6,-9,-3,0,0,0],[-6,-27,3,0,0,0]]);
 eta2:=3*(-40*x^2+148*x*y+36*y^2);
 
-Phi2:=frob_struc(Q,p,N,Z2,eta2,b,omega,denom);
+Phi2,data:=frob_struc(data,Z2,eta2,b,omega,denom);
 pt:=[0,0];
 Phi2_at_pt:=eval_mat_R(Phi2,pt,r);
