@@ -7,7 +7,7 @@ b:=[0,0]; // base point
 
 r,Delta,s:=auxpolys(Q);
 
-// put in a basis omega[i]dx/(dQ/dy) for H^1(X) by hand:
+// put in a basis omega[i]dx/(dQ/dy) for H^1(Y) by hand:
 
 omega:=[Zxy|];
 omega[1]:=3;
@@ -16,6 +16,9 @@ omega[3]:=3*y;
 omega[4]:=-160*x^4+736*x^3-16*x^2*y+436*x^2-440*x*y+68*y^2;
 omega[5]:=-80*x^3+132*x^2-40*x*y+68*y^2-96;
 omega[6]:=-48*x^2*y+84*x^2+216*x*y-12*y^2-160*x+272;
+omega[7]:=3*x^2;
+omega[8]:=3*x*y;
+omega[9]:=3*y^2;
 
 denom:=3; // the omega's have to be integral, but a denominator can be specified
 
@@ -27,10 +30,14 @@ b1:=[];
 for i:=1 to 3 do
   b1[i]:=poly_to_vec(reduce_mod_Q_exact(omega[i+3]*s,Q),13,3); // second kind
 end for;
+b2:=[];
+for i:=1 to 3 do
+  b2[i]:=poly_to_vec(reduce_mod_Q_exact(omega[i+6]*s,Q),13,3); // basis for H^1(Y) over H^1(X)
+end for;
 
 // b0 cat b1 is the basis for H^1(X) given by omega[i]*dx/(dQ/dy), multiplied by denom*LeadingCoefficient(Delta).
 
-data:=coleman_data(Q,p,N:useU:=true,b0:=b0,b1:=b1);
+data:=coleman_data(Q,p,N:useU:=true,b0:=b0,b1:=b1,b2:=b2);
 
 ////////////////////
 // list of points //
