@@ -437,7 +437,7 @@ basis_coho:=function(Q,p,r,W0,Winf,G0,Ginf,J0,Jinf,T0inv,Tinfinv,useU,b0,b1)
 
   E0nEinf:=Kernel(matE0nEinf);
 
-  // Compute a matrix with kernel the elements of E0 logarithmic at infinity. (is this correct?)
+  // Compute a matrix with kernel the elements of E0 logarithmic at infinity. 
 
   matlogforms:=ZeroMatrix(RationalField(),dimE0,d*(-ord0W-ordinfW-ordinfWinv-1));
   for i:=1 to dimE0 do
