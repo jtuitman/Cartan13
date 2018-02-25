@@ -7,35 +7,30 @@ SetPath("./Coleman-1.1");
 load "coleman.m";
 
 
-hecke_corr:=function(Q,q,N,omega,denom)
+hecke_corr:=function(data,q,N:b0:=[],b1:=[])
 
   // compute the matrix of the correspondence Z_q constructed from 
-  // the Hecke operator A_q w.r.t. the basis of H^1(X) given by [omega, denom].
+  // the Hecke operator A_q w.r.t. the basis of H^1(X) given by [b0,b1].
+  // assumes that this basis is symplectic
 
-  r,Delta,s:=auxpolys(Q);
-
-  b0:=[];
-  for i:=1 to 3 do
-    b0[i]:=poly_to_vec(reduce_mod_Q_exact(omega[i]*s,Q),13,3); // first kind
-  end for;
-  b1:=[];
-  for i:=1 to 3 do
-    b1[i]:=poly_to_vec(reduce_mod_Q_exact(omega[i+3]*s,Q),13,3); // second kind
-  end for;
-
-  // b0 cat b1 is the basis for H^1(X) given by omega[i]*dx/(dQ/dy), multiplied by denom*lc.
+  Q:=data`Q; g:=data`g;
 
   data:=coleman_data(Q,q,N:b0:=b0,b1:=b1);
 
   F:=data`F;
   Aq:=Transpose(F)+q*Transpose(F)^(-1);  
-  C:=ZeroMatrix(RationalField(),6,6);
-  C[1,4]:=-1; C[2,5]:=-1; C[3,6]:=-1; C[4,1]:=1; C[5,2]:=1; C[6,3]:=1;
-  Z:=(6*Aq-Trace(Aq)*IdentityMatrix(RationalField(),6))*C^(-1);
+  C:=ZeroMatrix(RationalField(),2*g,2*g);
+  for i:=1 to g do
+    C[i,g+i]:=-1;
+  end for;
+  for i:=1 to g do 
+    C[g+i,i]:=1; 
+  end for;
+  Z:=(2*g*Aq-Trace(Aq)*IdentityMatrix(RationalField(),2*g))*C^(-1);
   
-  for i:=1 to 6 do
-    for j:=1 to 6 do
-      Z[i,j]:=reduce_mod_pN_Q(Z[i,j],q,Floor(N/2));
+  for i:=1 to 2*g do
+    for j:=1 to 2*g do
+      Z[i,j]:=reduce_mod_pN_Q(Z[i,j],q,Floor(N/2)); // assumes that Z mod q^(N/2) will recover Z exactly, not rigorous for now
     end for;
   end for;
 
