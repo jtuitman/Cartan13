@@ -7,7 +7,7 @@ SetPath("./Coleman-1.1");
 load "coleman.m";
 
 
-hecke_corr:=function(data,q,N:b0:=[],b1:=[])
+hecke_corr:=function(data,q,N:basis0:=[],basis1:=[])
 
   // compute the matrix of the correspondence Z_q constructed from 
   // the Hecke operator A_q w.r.t. the basis of H^1(X) given by [b0,b1].
@@ -15,7 +15,7 @@ hecke_corr:=function(data,q,N:b0:=[],b1:=[])
 
   Q:=data`Q; g:=data`g;
 
-  data:=coleman_data(Q,q,N:b0:=b0,b1:=b1);
+  data:=coleman_data(Q,q,N:basis0:=basis0,basis1:=basis1);
 
   F:=data`F;
   Aq:=Transpose(F)+q*Transpose(F)^(-1);  
@@ -39,11 +39,9 @@ hecke_corr:=function(data,q,N:b0:=[],b1:=[])
 end function;
 
 
-frob_struc:=function(data,Z,eta,bpt,omega,denom)
+frob_struc:=function(data,Z,eta,bpt,denombasis)
 
-  // compute the matrix of the Frobenius structure Phi on A_Z using the basis for 
-  // H^1(X) given by [omega, denom], the matrix Z of a nice correspondence and a
-  // 1-form eta w.r.t. this basis.
+  // Compute the matrix G of the (inverse) Frobenius structure on A_Z.
 
   Q:=data`Q; p:=data`p; N:=data`N; g:=data`g; W0:=data`W0; Winf:=data`Winf; f0list:=data`f0list; finflist:=data`finflist; fendlist:=data`fendlist; 
   FH1U:=data`F; Nmax:=data`Nmax; basis:=data`basis; G0:=data`G0; Ginf:=data`Ginf; red_list_fin:=data`red_list_fin; red_list_inf:=data`red_list_inf; 
@@ -91,7 +89,7 @@ frob_struc:=function(data,Z,eta,bpt,omega,denom)
   for i:=1 to 2*g do
     g0[i]:=R!0;
     for j:=1 to 2*g do
-      g0[i]:=g0[i]+A[i,j]*fRlist[j]; // multiplied by denom*lc.
+      g0[i]:=g0[i]+A[i,j]*fRlist[j]; // multiplied by denombasis.
     end for;
   end for;
 
@@ -107,7 +105,8 @@ frob_struc:=function(data,Z,eta,bpt,omega,denom)
 
   basisR:=[];
   for i:=1 to 2*g do
-    basisR[i]:=reduce_mod_Q((R![S.1^0*(Ox!c) : c in Coefficients(omega[i])])*sR,QR,zR);  
+    // basisR[i]:=reduce_mod_Q((R![S.1^0*(Ox!c) : c in Coefficients(omega[i])])*sR,QR,zR);
+    basisR[i]:=R![S.1^0*(Ox!c) :c in Eltseq(basis[i])];
   end for;
 
   // Compute g0*omega:
@@ -125,7 +124,7 @@ frob_struc:=function(data,Z,eta,bpt,omega,denom)
 
   // Compute phi^(*)(eta)-p(eta):
 
-  eta:=eta*s; // multiplied by denom*lc
+  eta:=eta*s; // multiplied by denombasis
   eta:=reduce_mod_Q_exact(eta,Q);
   eta:=Vector(Coefficients(eta));
   phi_eta:=frobenius(eta,Q,p,Nmax,r,frobmatb0r); // phi^(*)(eta)
@@ -150,7 +149,7 @@ frob_struc:=function(data,Z,eta,bpt,omega,denom)
   for i:=1 to 2*g do
     Zf[i]:=R!0;
     for j:=1 to 2*g do
-      Zf[i]:=Zf[i]+ChangeRing(Z,R)[i,j]*fRlist[j]; // multiplied by denom*lc 
+      Zf[i]:=Zf[i]+ChangeRing(Z,R)[i,j]*fRlist[j]; // multiplied by denombasis
     end for;
   end for;
 
@@ -164,26 +163,26 @@ frob_struc:=function(data,Z,eta,bpt,omega,denom)
 
   // Compute c and h:
 
-  sum:=phiomegaZf+denom*lc*phi_eta-g0omega; // multiplied by (denom*lc)^2 
+  sum:=phiomegaZf+denombasis*phi_eta-g0omega; // multiplied by (denombasis)^2 
   sum:=convert_to_Qxzzinvd(sum,Q);
-  c,h0,hinf,hend:=reduce_with_fs(sum,Q,p,N,Nmax,r,W0,Winf,G0,Ginf,red_list_fin,red_list_inf,basis,integrals,quo_map); // multiplied by (denom*lc)^2 
+  c,h0,hinf,hend:=reduce_with_fs(sum,Q,p,N,Nmax,r,W0,Winf,G0,Ginf,red_list_fin,red_list_inf,basis,integrals,quo_map); // multiplied by (denombasis)^2 
   hR:=Qxzzinvd_to_R(compute_F(Q,W0,Winf,h0,hinf,hend),Q,p,r,R,W0);
   hR:=reduce_mod_Q(hR,QR,zR);
   hR:=hR-eval_R(hR,bpt,r); // make sure that h(bpt) = 0 
 
-  // Correct for the factors denom*lc:
+  // Correct for the factors denombasis:
 
   f:=[];
   for i:=1 to 2*g do
-    f[i]:=fRlist[i]/(denom*lc); // renormalised
+    f[i]:=fRlist[i]/denombasis; // renormalised
   end for;
 
   g1:=[];
   for i:=1 to 2*g do
-    g1[i]:=g0[i]/(denom*lc)+(O!c[i])/(denom*lc); // renormalised
+    g1[i]:=g0[i]/denombasis+(O!c[i])/denombasis; // renormalised
   end for;
 
-  h:=hR/(denom*lc)^2; // renormalised
+  h:=hR/(denombasis)^2; // renormalised
 
   // Compute matrix G:
 
