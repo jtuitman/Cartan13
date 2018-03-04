@@ -3,7 +3,7 @@
 //////////////////////////////////////////////
 
 
-find_eta:=function(data,denombasis,Z)
+hodge_data:=function(data,denombasis,Z)
 
   // Compute the 1-form eta, as a vector of coefficients
   // w.r.t. basis[i]/denombasis for i=2g+1,...,2g+k-1 where
@@ -51,7 +51,7 @@ find_eta:=function(data,denombasis,Z)
     b0fun[i]:=b0i;
   end for;
 
-  infplacesKinf:=InfinitePlaces(FFKinf); // places at infinity all of degree 1
+  infplacesKinf:=InfinitePlaces(FFKinf); // places at infinity all of degree 1, will be denoted by P
 
   L:=[];
   for i:=1 to (2*g+#infplacesKinf-1) do
@@ -67,6 +67,9 @@ find_eta:=function(data,denombasis,Z)
 
   v:=[];
   A:=ZeroMatrix(Kinf,#infplacesKinf-1,#infplacesKinf);
+
+  omegaZOmega_minus_OmegaZminusZTomega:=[]; // expansions of omega*Z*Omega-Omega*(Z-Z^T)*omega at all P
+  omegaY:=[]; // expansions at all P of omega_{2g+1},...omega_{2g+#infplacesKinf-1}
 
   for i:=1 to #infplacesKinf do
     
@@ -87,31 +90,39 @@ find_eta:=function(data,denombasis,Z)
       end for;
     end for;
 
-    OmegaZomega:=0; // Omega*Z*omega
+    OmegaZminusZTomega:=0; // Omega*(Z-Z^T)*omega
     for i:=1 to 2*g do
       for j:=1 to 2*g do
-        OmegaZomega:=OmegaZomega+Omega[i]*Z[i,j]*omega[j];
-      end for;
-    end for;
- 
-    OmegaZTomega:=0; // Omega*Tranpose(Z)*omega
-    for i:=1 to 2*g do
-      for j:=1 to 2*g do
-        OmegaZTomega:=OmegaZTomega+Omega[i]*Z[j,i]*omega[j];
+        OmegaZminusZTomega:=OmegaZminusZTomega+Omega[i]*(Z[i,j]-Z[j,i])*omega[j];
       end for;
     end for;
 
-    v[i]:=Coefficient(omegaZOmega-OmegaZomega+OmegaZTomega,-1); // residue of eta at P
+    omegaZOmega_minus_OmegaZminusZTomega[i]:=omegaZOmega-OmegaZminusZTomega; // expansion at i-th P   
 
+    v[i]:=Coefficient(omegaZOmega_minus_OmegaZminusZTomega[i],-1); // TODO clear up sign
+
+    omegaYP:=[]; // expansions at P of omega_{2g+1},...omega_{2g+#infplacesKinf-1}
     for j:=1 to (#infplacesKinf-1) do
-      omega[2*g+j]:=Expand(L[2*g+j],P)*dxdt*zinv;
-      A[j,i]:=Coefficient(omega[2*g+j],-1); // residue of omega_{2g+j} at P
+      omegaYP[j]:=Expand(L[2*g+j],P)*dxdt*zinv;
+      A[j,i]:=Coefficient(omegaYP[j],-1); // residue of omega_{2g+j} at P
     end for;
+    omegaY:=Append(omegaY,omegaYP);
 
   end for;
 
-  eta:=Solution(A,Vector(v)); // solve for eta
+  eta:=-Solution(A,Vector(v)); // solve for eta, TODO clear up sign
 
-  return eta;
+  gx:=[]; // functions g_x
+  for i:=1 to #infplacesKinf do
+    dgxi:=omegaZOmega_minus_OmegaZminusZTomega[i]; 
+    for j:=1 to (#infplacesKinf-1) do
+      dgxi:=dgxi+eta[j]*omegaY[i][j]; // TODO clear up sign
+    end for;
+    gx[i]:=Integral(dgxi);
+  end for;
+
+  // TODO gammaFil and betaFil
+
+  return eta,gx;
 
 end function;
