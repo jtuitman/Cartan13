@@ -63,27 +63,43 @@ hodge_data:=function(data,denombasis,Z)
     L[i]:=fun;
   end for;
 
-  // compute the expansions omega_x and Omega_x
+  // compute the expansions omega_x, Omega_x, b^0_x
 
-  omegax:=[];
-  Omegax:=[];
+  omegax:=[]; // expansions of omega
+  Omegax:=[]; // expansions of Omega
+  b0funx:=[]; // expansions of b^0
+  xfunx:=[];  // expansions of x
+
   for i:=1 to #infplacesKinf do
+
     P:=infplacesKinf[i];
-    dxdt:=Derivative(Expand(FFKinf!Kinfx.1,P));
+    
+    xfunx[i]:=Expand(FFKinf!Kinfx.1,P);
+    dxdt:=Derivative(xfunx[i]);
+    
     zinv:=Expand(LeadingCoefficient(r)/(FFKinf!Evaluate(r,Kinfx.1)),P);
+    
     omegaP:=[];
-    OmegaP:=[];
     for j:=1 to 2*g+#infplacesKinf-1 do
       omegaP[j]:=Expand(L[j],P)*dxdt*zinv;
     end for;
     omegax:=Append(omegax,omegaP);
+    
+    OmegaP:=[];
     for j:=1 to 2*g do
       OmegaP[j]:=Integral(omegaP[j]);
     end for;
     Omegax:=Append(Omegax,OmegaP);
+
+    b0funP:=[];
+    for j:=1 to d do
+      b0funP[j]:=Expand(b0fun[j],P);
+    end for;
+    b0funx:=Append(b0funx,b0funP);
+
   end for;
 
-  // set up the linear system eta*A=v
+  // set up the linear system eta*A=v satisfied by eta
   
   v:=[];
   A:=ZeroMatrix(Kinf,#infplacesKinf-1,#infplacesKinf);
@@ -110,7 +126,7 @@ hodge_data:=function(data,denombasis,Z)
 
     v[i]:=Coefficient(omegaZOmega_minus_OmegaZminusZTomega[i],-1); // TODO clear up sign
     for j:=1 to #infplacesKinf-1 do
-      A[j,i]:=Coefficient(omegax[i][2*g+j],-1); // residue of omega_{2g+j} at P
+      A[j,i]:=Coefficient(omegax[i][2*g+j],-1); // residue of omega_{2g+j} at the i-th point at infinity
     end for;
 
   end for;
@@ -126,8 +142,93 @@ hodge_data:=function(data,denombasis,Z)
     gx[i]:=Integral(dgxi);
   end for;
 
-  // TODO gammaFil and betaFil
+  poleorder:=0;
+  for i:=1 to #infplacesKinf do
+    val:=Valuation(gx[i]);
+    for j:=1 to 2*g do
+      val:=Minimum(val,Valuation(Omegax[i][j]));
+    end for;
+    poleorder:=Minimum(poleorder,val);
+  end for;
 
-  return eta,gx;
+  done:=false;
+  degx:=0;
+
+  while not done do
+    
+    for i:=1 to #infplacesKinf do
+      for j:=1 to d do
+        poleorder:=Minimum(poleorder,Valuation(b0funx[i][j])+degx*Valuation(xfunx[i]));
+      end for;
+    end for;
+
+    v:=[];
+    cnt:=0;
+    for i:=1 to #infplacesKinf do
+      for j:=poleorder to -1 do
+        cnt:=cnt+1;
+        v[cnt]:=Coefficient(gx[i],j);
+      end for;
+    end for;
+
+    rows:=[];
+
+    for i:=1 to 2*g do
+      row:=[];
+      cnt:=0;
+      for j:=1 to #infplacesKinf do
+        for k:=poleorder to -1 do
+          cnt:=cnt+1;
+          row[cnt]:=Coefficient(Omegax[j][i],k);
+        end for; 
+      end for;
+      rows:=Append(rows,row);
+    end for;
+
+    for i:=1 to d do
+      for j:=0 to degx do
+        row:=[];
+        cnt:=0;
+        for k:=1 to #infplacesKinf do
+          for l:=poleorder to -1 do
+            cnt:=cnt+1;
+            row[cnt]:=Coefficient(b0funx[k][i]*xfunx[k]^j,l);
+          end for;
+        end for;
+        rows:=Append(rows,row);  
+      end for;
+    end for;   
+      
+    suc,sol:=IsConsistent(Matrix(rows),Vector(v));
+    if suc then
+      done:=true;
+    else
+      degx:=degx+1;
+    end if;
+  
+  end while;
+
+  beta:=[];
+  for i:=1 to 2*g do
+    beta[i]:=sol[i];
+  end for;
+
+  Qx:=PolynomialRing(RationalField());
+  gamma:=[];
+  cnt:=2*g;
+  for i:=1 to d do
+    poly:=Qx!0;
+    for j:=0 to degx do
+      cnt:=cnt+1;
+      poly:=poly+(RationalField()!sol[cnt])*Qx.1^j;
+    end for;
+    gamma:=Append(gamma,poly);
+  end for;
+
+  // TODO impose gamma(bpt)=0
+  // TODO analyse t-adic precision
+  // TODO off by come constant factor (18?) compared to paper, check.
+
+  return eta,beta,gamma;
 
 end function;
