@@ -19,6 +19,7 @@ hecke_corr:=function(data,q,N:basis0:=[],basis1:=[])
 
   F:=data`F;
   Aq:=Transpose(F)+q*Transpose(F)^(-1);  
+  Aqtimes2g:=2*g*Aq;
   C:=ZeroMatrix(RationalField(),2*g,2*g);
   for i:=1 to g do
     C[i,g+i]:=-1;
@@ -26,15 +27,20 @@ hecke_corr:=function(data,q,N:basis0:=[],basis1:=[])
   for i:=1 to g do 
     C[g+i,i]:=1; 
   end for;
-  Z:=(2*g*Aq-Trace(Aq)*IdentityMatrix(RationalField(),2*g))*C^(-1);
+  Z:=(Aqtimes2g-Trace(Aq)*IdentityMatrix(RationalField(),2*g))*C^(-1);
+
+  // assume that precision q^(N/2) is sufficient to recover matrices Z and 2g*Aq exactly, not rigorous for now
   
   for i:=1 to 2*g do
     for j:=1 to 2*g do
-      Z[i,j]:=reduce_mod_pN_Q(Z[i,j],q,Floor(N/2)); // assumes that Z mod q^(N/2) will recover Z exactly, not rigorous for now
+      Aqtimes2g[i,j]:=reduce_mod_pN_Q(Aqtimes2g[i,j],q,Floor(N/2)); 
+      Z[i,j]:=reduce_mod_pN_Q(Z[i,j],q,Floor(N/2));      
     end for;
   end for;
 
-  return Z;
+  Aq:=Aqtimes2g/(2*g);
+
+  return Z, Aq;
 
 end function;
 
