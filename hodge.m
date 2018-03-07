@@ -63,50 +63,55 @@ hodge_data:=function(data,denombasis,Z)
     L[i]:=fun;
   end for;
 
-  // set up the linear system eta*A=v
+  // compute the expansions omega_x and Omega_x
 
+  omegax:=[];
+  Omegax:=[];
+  for i:=1 to #infplacesKinf do
+    P:=infplacesKinf[i];
+    dxdt:=Derivative(Expand(FFKinf!Kinfx.1,P));
+    zinv:=Expand(LeadingCoefficient(r)/(FFKinf!Evaluate(r,Kinfx.1)),P);
+    omegaP:=[];
+    OmegaP:=[];
+    for j:=1 to 2*g+#infplacesKinf-1 do
+      omegaP[j]:=Expand(L[j],P)*dxdt*zinv;
+    end for;
+    omegax:=Append(omegax,omegaP);
+    for j:=1 to 2*g do
+      OmegaP[j]:=Integral(omegaP[j]);
+    end for;
+    Omegax:=Append(Omegax,OmegaP);
+  end for;
+
+  // set up the linear system eta*A=v
+  
   v:=[];
   A:=ZeroMatrix(Kinf,#infplacesKinf-1,#infplacesKinf);
 
   omegaZOmega_minus_OmegaZminusZTomega:=[]; // expansions of omega*Z*Omega-Omega*(Z-Z^T)*omega at all P
-  omegaY:=[]; // expansions at all P of omega_{2g+1},...omega_{2g+#infplacesKinf-1}
 
   for i:=1 to #infplacesKinf do
     
-    P:=infplacesKinf[i];
-    dxdt:=Derivative(Expand(FFKinf!Kinfx.1,P));
-    zinv:=Expand(LeadingCoefficient(r)/(FFKinf!Evaluate(r,Kinfx.1)),P);
-    omega:=[];
-    Omega:=[];
-    for j:=1 to 2*g do
-      omega[j]:=Expand(L[j],P)*dxdt*zinv; // expansion of omega_j at P
-      Omega[j]:=Integral(omega[j]);       // expansion of Omega_j at P
-    end for;
-    
     omegaZOmega:=0; // omega*Z*Omega
-    for i:=1 to 2*g do
-      for j:=1 to 2*g do
-        omegaZOmega:=omegaZOmega+omega[i]*Z[i,j]*Omega[j];
+    for j:=1 to 2*g do
+      for k:=1 to 2*g do
+        omegaZOmega:=omegaZOmega+omegax[i][j]*Z[j,k]*Omegax[i][k];
       end for;
     end for;
 
     OmegaZminusZTomega:=0; // Omega*(Z-Z^T)*omega
-    for i:=1 to 2*g do
-      for j:=1 to 2*g do
-        OmegaZminusZTomega:=OmegaZminusZTomega+Omega[i]*(Z[i,j]-Z[j,i])*omega[j];
+    for j:=1 to 2*g do
+      for k:=1 to 2*g do
+        OmegaZminusZTomega:=OmegaZminusZTomega+Omegax[i][j]*(Z[j,k]-Z[k,j])*omegax[i][k];
       end for;
     end for;
 
-    omegaZOmega_minus_OmegaZminusZTomega[i]:=omegaZOmega-OmegaZminusZTomega; // expansion at i-th P   
+    omegaZOmega_minus_OmegaZminusZTomega[i]:=omegaZOmega-OmegaZminusZTomega; // expansion of omega*Z*Omega-Omega*(Z-Z^T)*omega at i-th point at infinity
 
     v[i]:=Coefficient(omegaZOmega_minus_OmegaZminusZTomega[i],-1); // TODO clear up sign
-
-    omegaYP:=[]; // expansions at P of omega_{2g+1},...omega_{2g+#infplacesKinf-1}
-    for j:=1 to (#infplacesKinf-1) do
-      omegaYP[j]:=Expand(L[2*g+j],P)*dxdt*zinv;
-      A[j,i]:=Coefficient(omegaYP[j],-1); // residue of omega_{2g+j} at P
+    for j:=1 to #infplacesKinf-1 do
+      A[j,i]:=Coefficient(omegax[i][2*g+j],-1); // residue of omega_{2g+j} at P
     end for;
-    omegaY:=Append(omegaY,omegaYP);
 
   end for;
 
@@ -116,7 +121,7 @@ hodge_data:=function(data,denombasis,Z)
   for i:=1 to #infplacesKinf do
     dgxi:=omegaZOmega_minus_OmegaZminusZTomega[i]; 
     for j:=1 to (#infplacesKinf-1) do
-      dgxi:=dgxi+eta[j]*omegaY[i][j]; // TODO clear up sign
+      dgxi:=dgxi+eta[j]*omegax[i][2*g+j]; // TODO clear up sign
     end for;
     gx[i]:=Integral(dgxi);
   end for;
