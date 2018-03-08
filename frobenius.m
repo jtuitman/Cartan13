@@ -45,7 +45,7 @@ hecke_corr:=function(data,q,N:basis0:=[],basis1:=[])
 end function;
 
 
-frob_struc:=function(data,Z,eta,bpt,denombasis)
+frob_struc:=function(data,denombasis,Z,eta,bpt)
 
   // Compute the matrix G of the (inverse) Frobenius structure on A_Z.
 
@@ -111,7 +111,6 @@ frob_struc:=function(data,Z,eta,bpt,denombasis)
 
   basisR:=[];
   for i:=1 to 2*g do
-    // basisR[i]:=reduce_mod_Q((R![S.1^0*(Ox!c) : c in Coefficients(omega[i])])*sR,QR,zR);
     basisR[i]:=R![S.1^0*(Ox!c) :c in Eltseq(basis[i])];
   end for;
 

@@ -103,3 +103,21 @@ Qxzzinvd_to_R:=function(f,Q,p,r,R,W0)
 
   return f_R;
 end function;
+
+
+fun_field:=function(data);
+
+  Q:=data`Q; d:=Degree(Q);
+
+  Qx:=RationalFunctionField(RationalField()); Qxy:=PolynomialRing(Qx);
+
+  f:=Qxy!0;
+  for i:=0 to d do
+    for j:=0 to Degree(Coefficient(Q,i)) do
+      f:=f+Coefficient(Coefficient(Q,i),j)*Qxy.1^i*Qx.1^j;
+    end for;
+  end for;
+  
+  return FunctionField(f); // function field of curve
+
+end function;

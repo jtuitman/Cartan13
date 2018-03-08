@@ -2,8 +2,7 @@
 // Functions for computing Hodge structures //
 //////////////////////////////////////////////
 
-
-hodge_data:=function(data,denombasis,Z)
+hodge_data:=function(data,denombasis,Z,bpt_FF)
 
   // Compute the 1-form eta, as a vector of coefficients
   // w.r.t. basis[i]/denombasis for i=2g+1,...,2g+k-1 where
@@ -42,13 +41,13 @@ hodge_data:=function(data,denombasis,Z)
   end for;  
   FFKinf:=FunctionField(finf); // function field of curve over Kinf
 
-  b0fun:=[]; // functions b^0 (finite integral basis)
+  b0funKinf:=[]; // functions b^0 (finite integral basis)
   for i:=1 to d do
     b0i:=FFKinf!0;
     for j:=1 to d do
       b0i:=b0i+Evaluate(W0[i,j],Kinfx.1)*FFKinf.1^(j-1);
     end for;
-    b0fun[i]:=b0i;
+    b0funKinf[i]:=b0i;
   end for;
 
   infplacesKinf:=InfinitePlaces(FFKinf); // places at infinity all of degree 1, will be denoted by P
@@ -57,7 +56,7 @@ hodge_data:=function(data,denombasis,Z)
   for i:=1 to (2*g+#infplacesKinf-1) do
     fun:=FFKinf!0;
     for j:=1 to d do
-      fun:=fun+Evaluate(basis[i][j],Kinfx.1)*b0fun[j];
+      fun:=fun+Evaluate(basis[i][j],Kinfx.1)*b0funKinf[j];
     end for;
     fun:=fun/denombasis;
     L[i]:=fun;
@@ -93,7 +92,7 @@ hodge_data:=function(data,denombasis,Z)
 
     b0funP:=[];
     for j:=1 to d do
-      b0funP[j]:=Expand(b0fun[j],P);
+      b0funP[j]:=Expand(b0funKinf[j],P);
     end for;
     b0funx:=Append(b0funx,b0funP);
 
@@ -131,7 +130,7 @@ hodge_data:=function(data,denombasis,Z)
 
   end for;
 
-  eta:=-Solution(A,Vector(v)); // solve for eta, TODO clear up sign
+  eta:=-Solution(A,Vector(v)); // solve for eta, TODO clear up sign, off by constant factor 3?
 
   gx:=[]; // functions g_x
   for i:=1 to #infplacesKinf do
@@ -213,21 +212,35 @@ hodge_data:=function(data,denombasis,Z)
     beta[i]:=sol[i];
   end for;
 
-  Qx:=PolynomialRing(RationalField());
+  Qt:=PolynomialRing(RationalField());
   gamma:=[];
   cnt:=2*g;
   for i:=1 to d do
     poly:=Qx!0;
     for j:=0 to degx do
       cnt:=cnt+1;
-      poly:=poly+(RationalField()!sol[cnt])*Qx.1^j;
+      poly:=poly+(RationalField()!sol[cnt])*Qt.1^j;
     end for;
     gamma:=Append(gamma,poly);
   end for;
 
-  // TODO impose gamma(bpt)=0
+  b0fun:=[]; // functions b^0 (finite integral basis)
+  for i:=1 to d do
+    b0i:=FF!0;
+    for j:=1 to d do
+      b0i:=b0i+Evaluate(W0[i,j],Qx.1)*FF.1^(j-1);
+    end for;
+    b0fun[i]:=b0i;
+  end for;
+
+  gamma_FF:=FF!0;
+  for i:=1 to d do
+    gamma_FF:=gamma_FF+Evaluate(gamma[i],Qx.1)*b0fun[i];
+  end for;
+  gamma[1]:=gamma[1]-Evaluate(gamma_FF,bpt_FF); // substract constant such that gamma(b)=0
+
   // TODO analyse t-adic precision
-  // TODO off by come constant factor (18?) compared to paper, check.
+  // TODO off by some constant factor compared to paper, check.
 
   return eta,beta,gamma;
 

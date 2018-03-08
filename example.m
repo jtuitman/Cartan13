@@ -4,7 +4,6 @@ load "hodge.m";
 Q:=y^4 + 5*x^4 - 6*x^2*y^2 + 6*x^3 + 26*x^2*y + 10*x*y^2 - 10*y^3 - 32*x^2 -40*x*y + 24*y^2 + 32*x - 16*y; // equation of the curve
 p:=17;      // prime number p
 N:=20;      // initial p-adic precision
-bpt:=[0,0]; // base point
 
 r,Delta,s:=auxpolys(Q);
 
@@ -44,6 +43,11 @@ denombasis:=denomomega*LeadingCoefficient(Delta);
 
 data:=coleman_data(Q,p,N:useU:=true,basis0:=basis0,basis1:=basis1,basis2:=basis2);
 
+FF:=fun_field(data);
+
+bpt:=Zeros(FF.1)[1]; // point [0,0] as place on the function field
+
+
 ////////////////////
 // list of points //
 ////////////////////
@@ -69,9 +73,9 @@ end for;
 // Z1,A11:=hecke_corr(data,11,10:basis0:=basis0,basis1:=basis1);
 Z1:=Matrix(RationalField(),6,6,[[0,-976,-1104,10,-6,18],[976,0,-816,-3,1,3],[1104,816,0,-3,3,-11],[-10,3,3,0,0,0],[6,-1,-3,0,0,0],[-18,-3,11,0,0,0]]);
 eta1:=-(132*x^2+148*x*y+24*y^2);
-// hodge_data(data,denombasis,Z1); 
+// hodge_data(data,denombasis,Z1,bpt); 
 
-G1:=frob_struc(data,Z1,eta1,bpt,denombasis);
+G1:=frob_struc(data,denombasis,Z1,eta1,[0,0]);
 G1_list:=[**];
 for i:=1 to #Qppoints do
   if is_bad(Qppoints[i],data) then
@@ -90,9 +94,9 @@ end for;
 // Z2,A7:=hecke_corr(data,7,10:basis0:=basis0,basis1:=basis1);
 Z2:=Matrix(RationalField(),6,6,[[0,112,-656,-6,6,6],[-112,0,-2576,15,9,27],[656,2576,0,3,3,-3],[6,-15,-3,0,0,0],[-6,-9,-3,0,0,0],[-6,-27,3,0,0,0]]);
 eta2:=3*(-40*x^2+148*x*y+36*y^2);
-// hodge_data(data,denombasis,Z2); 
+// hodge_data(data,denombasis,Z2,bpt); 
 
-G2:=frob_struc(data,Z2,eta2,bpt,denombasis);
+G2:=frob_struc(data,denombasis,Z2,eta2,[0,0]);
 G2_list:=[**];
 for i:=1 to #Qppoints do
   if is_bad(Qppoints[i],data) then
