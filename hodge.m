@@ -98,7 +98,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
 
   end for;
 
-  // compute expansions of Omega*Z*omega at all point at infinity
+  // compute expansions of Omega*Z*omega at all points at infinity
 
   OmegaZomega:=[];
   for i:=1 to #infplacesKinf do
@@ -144,8 +144,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
 
   done:=false;
   degx:=0;
-
-  while not done do
+  while not done do // try larger and larger degree in x
     
     for i:=1 to #infplacesKinf do
       for j:=1 to d do
@@ -153,7 +152,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
       end for;
     end for;
 
-    v:=[];
+    v:=[]; // coefficients of principal parts of all gx 
     cnt:=0;
     for i:=1 to #infplacesKinf do
       for j:=poleorder to -1 do
@@ -170,7 +169,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
       for j:=1 to #infplacesKinf do
         for k:=poleorder to -1 do
           cnt:=cnt+1;
-          row[cnt]:=Coefficient(Omegax[j][i+g],k);
+          row[cnt]:=Coefficient(Omegax[j][i+g],k); // coefficients of principal part of Omegax_{i+g} at jth point at infinity
         end for; 
       end for;
       rows:=Append(rows,row);
@@ -183,7 +182,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
         for k:=1 to #infplacesKinf do
           for l:=poleorder to -1 do
             cnt:=cnt+1;
-            row[cnt]:=Coefficient(b0funx[k][i]*xfunx[k]^j,l);
+            row[cnt]:=Coefficient(b0funx[k][i]*xfunx[k]^j,l); // coefficients of principal part of x^j*b^0_i at kth point at infinity
           end for;
         end for;
         rows:=Append(rows,row);  
@@ -193,16 +192,20 @@ hodge_data:=function(data,denombasis,Z,bpt)
     suc,sol:=IsConsistent(Matrix(rows),Vector(v));
     if suc then
       done:=true;
-    else
+    else // if no success, increase the degree in x
       degx:=degx+1;
     end if;
   
   end while;
 
+  // read off beta from solution
+
   beta:=[];
   for i:=1 to g do
     beta[i]:=sol[i];
   end for;
+
+  // read off gamma from solution
 
   Qt:=PolynomialRing(RationalField());
   gamma:=[];
@@ -225,11 +228,13 @@ hodge_data:=function(data,denombasis,Z,bpt)
     b0fun[i]:=b0i;
   end for;
 
+  // substract constant such that gamma(bpt)=0
+
   gamma_FF:=FF!0;
   for i:=1 to d do
     gamma_FF:=gamma_FF+Evaluate(gamma[i],Qx.1)*b0fun[i];
   end for;
-  gamma[1]:=gamma[1]-Evaluate(gamma_FF,bpt); // substract constant such that gamma(b)=0
+  gamma[1]:=gamma[1]-Evaluate(gamma_FF,bpt); 
 
   // TODO analyse t-adic precision
   // TODO beta,gamma off by factor 3/2 compared to paper
