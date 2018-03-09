@@ -2,7 +2,7 @@
 // Functions for computing Hodge structures //
 //////////////////////////////////////////////
 
-hodge_data:=function(data,denombasis,Z,bpt_FF)
+hodge_data:=function(data,denombasis,Z,bpt)
 
   // Compute the 1-form eta, as a vector of coefficients
   // w.r.t. basis[i]/denombasis for i=2g+1,...,2g+k-1 where
@@ -98,45 +98,37 @@ hodge_data:=function(data,denombasis,Z,bpt_FF)
 
   end for;
 
+  // compute expansions of Omega*Z*omega at all point at infinity
+
+  OmegaZomega:=[];
+  for i:=1 to #infplacesKinf do
+    OmegaZomegaP:=0;
+    for j:=1 to 2*g do
+      for k:=1 to 2*g do
+        OmegaZomegaP:=OmegaZomegaP+omegax[i][j]*Z[j,k]*Omegax[i][k];
+      end for;
+    end for;
+    OmegaZomega:=Append(OmegaZomega,OmegaZomegaP);
+  end for;
+
   // set up the linear system eta*A=v satisfied by eta
   
   v:=[];
   A:=ZeroMatrix(Kinf,#infplacesKinf-1,#infplacesKinf);
-
-  omegaZOmega_minus_OmegaZminusZTomega:=[]; // expansions of omega*Z*Omega-Omega*(Z-Z^T)*omega at all P
-
   for i:=1 to #infplacesKinf do
-    
-    omegaZOmega:=0; // omega*Z*Omega
-    for j:=1 to 2*g do
-      for k:=1 to 2*g do
-        omegaZOmega:=omegaZOmega+omegax[i][j]*Z[j,k]*Omegax[i][k];
-      end for;
-    end for;
-
-    OmegaZminusZTomega:=0; // Omega*(Z-Z^T)*omega
-    for j:=1 to 2*g do
-      for k:=1 to 2*g do
-        OmegaZminusZTomega:=OmegaZminusZTomega+Omegax[i][j]*(Z[j,k]-Z[k,j])*omegax[i][k];
-      end for;
-    end for;
-
-    omegaZOmega_minus_OmegaZminusZTomega[i]:=omegaZOmega-OmegaZminusZTomega; // expansion of omega*Z*Omega-Omega*(Z-Z^T)*omega at i-th point at infinity
-
-    v[i]:=Coefficient(omegaZOmega_minus_OmegaZminusZTomega[i],-1); // TODO clear up sign
+    v[i]:=-Coefficient(OmegaZomega[i],-1); // residue of eta at i-th point of infinity
     for j:=1 to #infplacesKinf-1 do
-      A[j,i]:=Coefficient(omegax[i][2*g+j],-1); // residue of omega_{2g+j} at the i-th point at infinity
+      A[j,i]:=Coefficient(omegax[i][2*g+j],-1); // residue of omega_{2g+j} at i-th point at infinity
     end for;
-
   end for;
 
-  eta:=-Solution(A,Vector(v)); // solve for eta, TODO clear up sign, off by constant factor 3?
+  eta:=Solution(A,Vector(v)); // solve for eta
 
   gx:=[]; // functions g_x
   for i:=1 to #infplacesKinf do
-    dgxi:=omegaZOmega_minus_OmegaZminusZTomega[i]; 
+    dgxi:=OmegaZomega[i]; 
     for j:=1 to (#infplacesKinf-1) do
-      dgxi:=dgxi+eta[j]*omegax[i][2*g+j]; // TODO clear up sign
+      dgxi:=dgxi+eta[j]*omegax[i][2*g+j]; 
     end for;
     gx[i]:=Integral(dgxi);
   end for;
@@ -172,13 +164,13 @@ hodge_data:=function(data,denombasis,Z,bpt_FF)
 
     rows:=[];
 
-    for i:=1 to 2*g do
+    for i:=1 to g do
       row:=[];
       cnt:=0;
       for j:=1 to #infplacesKinf do
         for k:=poleorder to -1 do
           cnt:=cnt+1;
-          row[cnt]:=Coefficient(Omegax[j][i],k);
+          row[cnt]:=Coefficient(Omegax[j][i+g],k);
         end for; 
       end for;
       rows:=Append(rows,row);
@@ -208,13 +200,13 @@ hodge_data:=function(data,denombasis,Z,bpt_FF)
   end while;
 
   beta:=[];
-  for i:=1 to 2*g do
+  for i:=1 to g do
     beta[i]:=sol[i];
   end for;
 
   Qt:=PolynomialRing(RationalField());
   gamma:=[];
-  cnt:=2*g;
+  cnt:=g;
   for i:=1 to d do
     poly:=Qx!0;
     for j:=0 to degx do
@@ -237,10 +229,10 @@ hodge_data:=function(data,denombasis,Z,bpt_FF)
   for i:=1 to d do
     gamma_FF:=gamma_FF+Evaluate(gamma[i],Qx.1)*b0fun[i];
   end for;
-  gamma[1]:=gamma[1]-Evaluate(gamma_FF,bpt_FF); // substract constant such that gamma(b)=0
+  gamma[1]:=gamma[1]-Evaluate(gamma_FF,bpt); // substract constant such that gamma(b)=0
 
   // TODO analyse t-adic precision
-  // TODO off by some constant factor compared to paper, check.
+  // TODO beta,gamma off by factor 3/2 compared to paper
 
   return eta,beta,gamma;
 
