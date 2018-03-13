@@ -1,3 +1,5 @@
+SetPath("./Coleman-1.1");
+load "coleman.m";
 load "frobenius.m";
 load "hodge.m";
 

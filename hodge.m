@@ -2,6 +2,7 @@
 // Functions for computing Hodge structures //
 //////////////////////////////////////////////
 
+
 hodge_data:=function(data,denombasis,Z,bpt)
 
   // Compute the 1-form eta, as a vector of coefficients
@@ -131,6 +132,21 @@ hodge_data:=function(data,denombasis,Z,bpt)
       dgxi:=dgxi+eta[j]*omegax[i][2*g+j]; 
     end for;
     gx[i]:=Integral(dgxi);
+  end for;
+
+  OmegaZs2Omega:=[];
+  for i:=1 to #infplacesKinf do
+    OmegaZs2OmegaP:=0;
+    for j:=1 to 2*g do
+      for k:=g+1 to 2*g do
+        OmegaZs2OmegaP:=OmegaZs2OmegaP+Omegax[i][j]*Z[j,k]*Omegax[i][k]; // sign?
+      end for;
+    end for;
+    OmegaZs2Omega[i]:=OmegaZs2OmegaP;
+  end for;
+
+  for i:=1 to #infplacesKinf do
+    gx[i]:=gx[i]+OmegaZs2Omega[i];
   end for;
 
   poleorder:=0;

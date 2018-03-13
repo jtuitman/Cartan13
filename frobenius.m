@@ -3,10 +3,6 @@
 //////////////////////////////////////////////////
 
 
-SetPath("./Coleman-1.1");
-load "coleman.m";
-
-
 hecke_corr:=function(data,q,N:basis0:=[],basis1:=[])
 
   // compute the matrix of the correspondence Z_q constructed from 
