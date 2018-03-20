@@ -87,7 +87,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
     
     OmegaP:=[];
     for j:=1 to 2*g do
-      OmegaP[j]:=Integral(omegaP[j]);
+      OmegaP[j]:=Integral(omegaP[j]); 
     end for;
     Omegax:=Append(Omegax,OmegaP);
 
@@ -101,15 +101,15 @@ hodge_data:=function(data,denombasis,Z,bpt)
 
   // compute expansions of Omega*Z*omega at all points at infinity
 
-  OmegaZomega:=[];
+  omegaZOmega:=[];
   for i:=1 to #infplacesKinf do
-    OmegaZomegaP:=0;
+    omegaZOmegaP:=0;
     for j:=1 to 2*g do
       for k:=1 to 2*g do
-        OmegaZomegaP:=OmegaZomegaP+omegax[i][j]*Z[j,k]*Omegax[i][k];
+        omegaZOmegaP:=omegaZOmegaP+omegax[i][j]*Z[j,k]*Omegax[i][k];
       end for;
     end for;
-    OmegaZomega:=Append(OmegaZomega,OmegaZomegaP);
+    omegaZOmega:=Append(omegaZOmega,omegaZOmegaP);
   end for;
 
   // set up the linear system eta*A=v satisfied by eta
@@ -117,7 +117,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
   v:=[];
   A:=ZeroMatrix(Kinf,#infplacesKinf-1,#infplacesKinf);
   for i:=1 to #infplacesKinf do
-    v[i]:=-Coefficient(OmegaZomega[i],-1); // residue of eta at i-th point of infinity
+    v[i]:=-Coefficient(omegaZOmega[i],-1); // residue of eta at i-th point of infinity 
     for j:=1 to #infplacesKinf-1 do
       A[j,i]:=Coefficient(omegax[i][2*g+j],-1); // residue of omega_{2g+j} at i-th point at infinity
     end for;
@@ -127,7 +127,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
 
   gx:=[]; // functions g_x
   for i:=1 to #infplacesKinf do
-    dgxi:=OmegaZomega[i]; 
+    dgxi:=omegaZOmega[i]; 
     for j:=1 to (#infplacesKinf-1) do
       dgxi:=dgxi+eta[j]*omegax[i][2*g+j]; 
     end for;
