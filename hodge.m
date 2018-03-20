@@ -253,7 +253,6 @@ hodge_data:=function(data,denombasis,Z,bpt)
   gamma[1]:=gamma[1]-Evaluate(gamma_FF,bpt); 
 
   // TODO analyse t-adic precision
-  // TODO beta,gamma off by factor 3/2 compared to paper
 
   return eta,beta,gamma;
 

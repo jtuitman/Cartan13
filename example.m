@@ -2,6 +2,7 @@ SetPath("./Coleman-1.1");
 load "coleman.m";
 load "frobenius.m";
 load "hodge.m";
+load "heights.m";
 
 Q:=y^4 + 5*x^4 - 6*x^2*y^2 + 6*x^3 + 26*x^2*y + 10*x*y^2 - 10*y^3 - 32*x^2 -40*x*y + 24*y^2 + 32*x - 16*y; // equation of the curve
 p:=17;      // prime number p
@@ -107,5 +108,29 @@ for i:=1 to #Qppoints do
     P:=teichpoints[i];
     pt:=[IntegerRing()!(P`x),IntegerRing()!(P`b)[2]];
     G2_list[i]:=eval_mat_R(G2,pt,r);
+  end if;
+end for;
+
+// Compute Frobenius equivariant isomorphisms s^phi
+
+///////////
+// test: //
+///////////
+
+s1_phi:=[**];
+for i:=1 to #G1_list do
+  if G1_list[i] ne 0 then
+    s1_phi[i]:=frob_equiv_iso(G1_list[i],data);
+  else
+    s1_phi[i]:=0;
+  end if;
+end for;
+
+s2_phi:=[**];
+for i:=1 to #G2_list do
+  if G2_list[i] ne 0 then
+    s2_phi[i]:=frob_equiv_iso(G2_list[i],data);
+  else
+    s2_phi[i]:=0;
   end if;
 end for;
