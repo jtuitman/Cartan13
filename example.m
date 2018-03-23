@@ -57,8 +57,7 @@ bpt:=Zeros(FF.1)[1]; // point [0,0] as place on the function field
 
 bound:=1000;
 Qpoints:=Q_points(data,bound);
-
-Qppoints:=Qp_points(data); // first 2 points are infinite, last point finite bad, all other points good
+Qppoints:=Qp_points(data:points:=Qpoints); // first 2 points are infinite, last point finite bad, all other points good
 
 teichpoints:=[**]; // compute Teichmueller representatives of good points
 for i:=1 to #Qppoints do
@@ -111,11 +110,9 @@ for i:=1 to #Qppoints do
   end if;
 end for;
 
-// Compute Frobenius equivariant isomorphisms s^phi
-
-///////////
-// test: //
-///////////
+//////////////////////////////////////////////////////
+// Compute Frobenius equivariant isomorphisms s^phi //
+//////////////////////////////////////////////////////
 
 s1_phi:=[**];
 for i:=1 to #G1_list do
@@ -134,3 +131,12 @@ for i:=1 to #G2_list do
     s2_phi[i]:=0;
   end if;
 end for;
+
+////////////////////////
+// parallel transport //
+////////////////////////
+
+P:=Qppoints[8]; // point [1/2,1/2]
+P0:=teichmueller_pt(P,data);
+eta1:=[-44,-148/3,-8]; 
+parallel_transport(P0,P,denombasis,Z1,eta1,data:prec:=100); // checked: agrees with Netan's code mod p^10
