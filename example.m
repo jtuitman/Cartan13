@@ -8,6 +8,8 @@ Q:=y^4 + 5*x^4 - 6*x^2*y^2 + 6*x^3 + 26*x^2*y + 10*x*y^2 - 10*y^3 - 32*x^2 -40*x
 p:=17;      // prime number p
 N:=20;      // initial p-adic precision
 
+Qp:=pAdicField(p,N);
+
 r,Delta,s:=auxpolys(Q);
 
 // put in a basis omega[i]dx/(dQ/dy) for H^1(Y) by hand:
@@ -136,7 +138,25 @@ end for;
 // parallel transport //
 ////////////////////////
 
-P:=Qppoints[8]; // point [1/2,1/2]
-P0:=teichmueller_pt(P,data);
 eta1:=[-44,-148/3,-8]; 
-parallel_transport(P0,P,denombasis,Z1,eta1,data:prec:=100); // checked: agrees with Netan's code mod p^10
+eta2:=[-40,148,36];
+
+AZ1b:=[**];
+for i:=1 to #s1_phi do
+  if s1_phi[i] ne 0 then
+    AZ1b[i]:=parallel_transport(teichpoints[i],Qppoints[i],denombasis,Z1,eta1,data:prec:=100)*ChangeRing(G1_list[i],Qp);
+  else
+    AZ1b[i]:=0;
+  end if;
+end for;
+
+AZ2b:=[**];
+for i:=1 to #s2_phi do
+  if s2_phi[i] ne 0 then
+    AZ2b[i]:=parallel_transport(teichpoints[i],Qppoints[i],denombasis,Z2,eta2,data:prec:=100)*ChangeRing(G2_list[i],Qp);
+  else
+    AZ2b[i]:=0;
+  end if;
+end for;
+
+// checked all of this for P1,P2,P3,P5 agrees with Netan

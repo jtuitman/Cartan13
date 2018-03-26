@@ -145,7 +145,7 @@ function parallel_transport(P1,P2,denombasis,Z,eta,data:prec:=0)
   dgx:=0;
   for i:=1 to 2*g do
     for j:=1 to 2*g do
-      dgx:=dgx+omegax[i]*(K!Z[i,j])*Omegax[j]; // think about constants in Omegax here....
+      dgx:=dgx+omegax[i]*(K!Z[i,j])*Omegax[j]; 
     end for;
   end for;
   for i:=1 to infpoints-1 do
