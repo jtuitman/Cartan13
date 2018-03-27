@@ -117,6 +117,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
   end for;
 
   eta:=Solution(A,Vector(v)); // solve for eta
+  eta:=ChangeRing(eta,RationalField());
 
   gx:=[]; // functions g_x
   for i:=1 to #infplacesKinf do
@@ -132,7 +133,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
     OmegaZs2OmegaP:=0;
     for j:=1 to 2*g do
       for k:=g+1 to 2*g do
-        OmegaZs2OmegaP:=OmegaZs2OmegaP+Omegax[i][j]*Z[j,k]*Omegax[i][k]; // sign?
+        OmegaZs2OmegaP:=OmegaZs2OmegaP+Omegax[i][j]*Z[j,k]*Omegax[i][k]; 
       end for;
     end for;
     OmegaZs2Omega[i]:=OmegaZs2OmegaP;
@@ -211,7 +212,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
 
   beta:=[];
   for i:=1 to g do
-    beta[i]:=sol[i];
+    beta[i]:=RationalField()!sol[i];
   end for;
 
   // read off gamma from solution
@@ -220,7 +221,7 @@ hodge_data:=function(data,denombasis,Z,bpt)
   gamma:=[];
   cnt:=g;
   for i:=1 to d do
-    poly:=Qx!0;
+    poly:=Qt!0;
     for j:=0 to degx do
       cnt:=cnt+1;
       poly:=poly+(RationalField()!sol[cnt])*Qt.1^j;

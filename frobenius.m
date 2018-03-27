@@ -51,7 +51,7 @@ frob_struc:=function(data,denombasis,Z,eta,bpt)
 
   d:=Degree(Q); lc:=LeadingCoefficient(Delta);
 
-  O,Ox,S,R:=getrings(p,data`Nmax); // O = IntegerRing(p^Nmax), Ox = O[x], S = Ox[z,1/z], R = S[y]
+  O,Ox,S,R:=getrings(p,Nmax); // O = IntegerRing(p^Nmax), Ox = O[x], S = Ox[z,1/z], R = S[y]
 
   // Coerce Q into R:
 
@@ -123,11 +123,27 @@ frob_struc:=function(data,denombasis,Z,eta,bpt)
 
   frobmatb0r:=froblift(Q,p,Nmax-1,r,Delta,s,W0);
 
+  // determine the number of points at infinity
+
+  FF:=fun_field(data);
+  infplaces:=InfinitePlaces(FF);
+  infpoints:=0;
+  for i:=1 to #infplaces do
+    infpoints:=infpoints+Degree(infplaces[i]);
+  end for;
+
   // Compute phi^(*)(eta)-p(eta):
 
-  eta:=eta*s; // multiplied by denombasis
-  eta:=reduce_mod_Q_exact(eta,Q);
-  eta:=Vector(Coefficients(eta));
+  eta_new:=[];
+  for i:=1 to d do
+    sum:=0;
+    for j:=1 to infpoints-1 do
+      sum:=sum+Zx!(eta[j]*(PolynomialRing(RationalField())!basis[2*g+j][i])); // fix this
+    end for;
+    eta_new[i]:=sum;
+  end for;
+  eta:=eta_new; // multiplied by denombasis
+
   phi_eta:=frobenius(eta,Q,p,Nmax,r,frobmatb0r); // phi^(*)(eta)
   for i:=1 to d do
     phi_eta[i]:=phi_eta[i]-p*(S!Evaluate(eta[i],Ox.1)); // phi^(*)(eta)-p(eta), as vector in S^4

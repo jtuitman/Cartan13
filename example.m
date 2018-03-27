@@ -74,10 +74,10 @@ end for;
 // first correspondence: //
 ///////////////////////////
 
-// Z1,A11:=hecke_corr(data,11,10:basis0:=basis0,basis1:=basis1);
-Z1:=Matrix(RationalField(),6,6,[[0,-976,-1104,10,-6,18],[976,0,-816,-3,1,3],[1104,816,0,-3,3,-11],[-10,3,3,0,0,0],[6,-1,-3,0,0,0],[-18,-3,11,0,0,0]]);
-eta1:=-(132*x^2+148*x*y+24*y^2);
-// hodge_data(data,denombasis,Z1,bpt); 
+Z1,A11:=hecke_corr(data,11,10:basis0:=basis0,basis1:=basis1);
+eta1,beta1,gamma1:=hodge_data(data,denombasis,Z1,bpt); 
+// Z1:=Matrix(RationalField(),6,6,[[0,-976,-1104,10,-6,18],[976,0,-816,-3,1,3],[1104,816,0,-3,3,-11],[-10,3,3,0,0,0],[6,-1,-3,0,0,0],[-18,-3,11,0,0,0]]);
+// eta1:=-(132*x^2+148*x*y+24*y^2);
 
 G1:=frob_struc(data,denombasis,Z1,eta1,[0,0]);
 G1_list:=[**];
@@ -95,10 +95,10 @@ end for;
 // second correspondence: //
 ////////////////////////////
 
-// Z2,A7:=hecke_corr(data,7,10:basis0:=basis0,basis1:=basis1);
-Z2:=Matrix(RationalField(),6,6,[[0,112,-656,-6,6,6],[-112,0,-2576,15,9,27],[656,2576,0,3,3,-3],[6,-15,-3,0,0,0],[-6,-9,-3,0,0,0],[-6,-27,3,0,0,0]]);
-eta2:=3*(-40*x^2+148*x*y+36*y^2);
-// hodge_data(data,denombasis,Z2,bpt); 
+Z2,A7:=hecke_corr(data,7,10:basis0:=basis0,basis1:=basis1);
+eta2,beta2,gamma2:=hodge_data(data,denombasis,Z2,bpt); 
+// Z2:=Matrix(RationalField(),6,6,[[0,112,-656,-6,6,6],[-112,0,-2576,15,9,27],[656,2576,0,3,3,-3],[6,-15,-3,0,0,0],[-6,-9,-3,0,0,0],[-6,-27,3,0,0,0]]);
+// eta2:=3*(-40*x^2+148*x*y+36*y^2);
 
 G2:=frob_struc(data,denombasis,Z2,eta2,[0,0]);
 G2_list:=[**];
@@ -137,9 +137,6 @@ end for;
 ////////////////////////
 // parallel transport //
 ////////////////////////
-
-eta1:=[-44,-148/3,-8]; 
-eta2:=[-40,148,36];
 
 AZ1b:=[**];
 for i:=1 to #s1_phi do
