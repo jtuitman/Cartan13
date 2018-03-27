@@ -188,7 +188,7 @@ height:=function(Phi,betafil,gammafil,splitting,data)
   Qp:=pAdicField(p,N);
 
   betafil    := Vector(Qp,[0 : i in [1..g]] cat Eltseq(betafil));
-  gammafil   := ChangeRing(gammafil,Qp);
+  gammafil   := Qp!gammafil;
 
   alpha1g    := Vector(Qp,g,[Phi[i+1,1]:i in [1..g]]);
   alpha      := Vector(Qp,2*g,[Phi[i+1,1]:i in [1..2*g]]);
@@ -197,7 +197,7 @@ height:=function(Phi,betafil,gammafil,splitting,data)
   gammaphi   := Phi[2*g+2,1];
   betaphi    := Vector(Qp,6,[Phi[2*g+2,i+1]:i in [1..2*g]]);
   
-  return gammaphi+gammafil-DotProduct(s1alphaphi,betaphi)-DotProduct(s2alphaphi,betafil);
+  return gammaphi-gammafil-DotProduct(s1alphaphi,betaphi)-DotProduct(s2alphaphi,betafil);
 
 end function;
 
