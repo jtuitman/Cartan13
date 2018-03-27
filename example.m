@@ -70,17 +70,17 @@ for i:=1 to #Qppoints do
   end if;
 end for;
 
+
 ///////////////////////////
 // first correspondence: //
 ///////////////////////////
 
 Z1,A11:=hecke_corr(data,11,10:basis0:=basis0,basis1:=basis1);
-eta1,beta1,gamma1:=hodge_data(data,denombasis,Z1,bpt); 
-// Z1:=Matrix(RationalField(),6,6,[[0,-976,-1104,10,-6,18],[976,0,-816,-3,1,3],[1104,816,0,-3,3,-11],[-10,3,3,0,0,0],[6,-1,-3,0,0,0],[-18,-3,11,0,0,0]]);
-// eta1:=-(132*x^2+148*x*y+24*y^2);
+eta1,betafil1,gammafil1:=hodge_data(data,denombasis,Z1,bpt); 
 
-G1:=frob_struc(data,denombasis,Z1,eta1,[0,0]);
-G1_list:=[**];
+G1:=frob_struc(data,denombasis,Z1,eta1,[0,0]); // matrix of Frobenius structure on A_Z1(b)
+
+G1_list:=[**]; // evaluations of G1 at Teichmuellers of all good points (0 if bad)
 for i:=1 to #Qppoints do
   if is_bad(Qppoints[i],data) then
     G1_list[i]:=0;
@@ -91,17 +91,33 @@ for i:=1 to #Qppoints do
   end if;
 end for;
 
+PhiAZ1b:=[**]; // Frobenius on the phi-modules A_Z1(b,P) (0 if P bad)
+for i:=1 to #G1_list do
+  if G1_list[i] ne 0 then
+    PhiAZ1b[i]:=parallel_transport(teichpoints[i],Qppoints[i],denombasis,Z1,eta1,data:prec:=100)*frob_equiv_iso(G1_list[i],data);
+  else
+    PhiAZ1b[i]:=0;
+  end if;
+end for;
+
+gammafil1_list:=[**]; // evaluations of gammafil1 at all good points (0 if bad)
+for i:=1 to #G1_list do
+  if G1_list[i] ne 0 then
+    gammafil1_list[i]:=evalf0(ChangeRing(gammafil1,LaurentSeriesRing(BaseRing(gammafil1))),Qppoints[i],data);
+  else
+    gammafil1_list[i]:=0;
+  end if;
+end for;
+
 ////////////////////////////
 // second correspondence: //
 ////////////////////////////
 
 Z2,A7:=hecke_corr(data,7,10:basis0:=basis0,basis1:=basis1);
-eta2,beta2,gamma2:=hodge_data(data,denombasis,Z2,bpt); 
-// Z2:=Matrix(RationalField(),6,6,[[0,112,-656,-6,6,6],[-112,0,-2576,15,9,27],[656,2576,0,3,3,-3],[6,-15,-3,0,0,0],[-6,-9,-3,0,0,0],[-6,-27,3,0,0,0]]);
-// eta2:=3*(-40*x^2+148*x*y+36*y^2);
+eta2,betafil2,gammafil2:=hodge_data(data,denombasis,Z2,bpt); 
 
-G2:=frob_struc(data,denombasis,Z2,eta2,[0,0]);
-G2_list:=[**];
+G2:=frob_struc(data,denombasis,Z2,eta2,[0,0]); // matrix of Frobenius structure on A_Z2(b)
+G2_list:=[**]; // evaluations of G2 at Teichmuellers of all good points (0 if bad)
 for i:=1 to #Qppoints do
   if is_bad(Qppoints[i],data) then
     G2_list[i]:=0;
@@ -112,48 +128,20 @@ for i:=1 to #Qppoints do
   end if;
 end for;
 
-//////////////////////////////////////////////////////
-// Compute Frobenius equivariant isomorphisms s^phi //
-//////////////////////////////////////////////////////
-
-s1_phi:=[**];
-for i:=1 to #G1_list do
-  if G1_list[i] ne 0 then
-    s1_phi[i]:=frob_equiv_iso(G1_list[i],data);
-  else
-    s1_phi[i]:=0;
-  end if;
-end for;
-
-s2_phi:=[**];
+PhiAZ2b:=[**]; // Frobenius on the phi-modules A_Z2(b,P) (0 if P bad)
 for i:=1 to #G2_list do
   if G2_list[i] ne 0 then
-    s2_phi[i]:=frob_equiv_iso(G2_list[i],data);
+    PhiAZ2b[i]:=parallel_transport(teichpoints[i],Qppoints[i],denombasis,Z2,eta2,data:prec:=100)*frob_equiv_iso(G2_list[i],data);
   else
-    s2_phi[i]:=0;
+    PhiAZ2b[i]:=0;
   end if;
 end for;
 
-////////////////////////
-// parallel transport //
-////////////////////////
-
-AZ1b:=[**];
-for i:=1 to #s1_phi do
-  if s1_phi[i] ne 0 then
-    AZ1b[i]:=parallel_transport(teichpoints[i],Qppoints[i],denombasis,Z1,eta1,data:prec:=100)*ChangeRing(G1_list[i],Qp);
+gammafil2_list:=[**]; // evaluations of gammafil2 at Teichmuellers of all good points (0 if bad)
+for i:=1 to #G2_list do
+  if G2_list[i] ne 0 then
+    gammafil2_list[i]:=evalf0(ChangeRing(gammafil2,LaurentSeriesRing(BaseRing(gammafil2))),Qppoints[i],data);
   else
-    AZ1b[i]:=0;
+    gammafil2_list[i]:=0;
   end if;
 end for;
-
-AZ2b:=[**];
-for i:=1 to #s2_phi do
-  if s2_phi[i] ne 0 then
-    AZ2b[i]:=parallel_transport(teichpoints[i],Qppoints[i],denombasis,Z2,eta2,data:prec:=100)*ChangeRing(G2_list[i],Qp);
-  else
-    AZ2b[i]:=0;
-  end if;
-end for;
-
-// checked all of this for P1,P2,P3,P5 agrees with Netan

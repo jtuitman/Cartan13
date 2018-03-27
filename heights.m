@@ -178,4 +178,28 @@ function parallel_transport(P1,P2,denombasis,Z,eta,data:prec:=0)
 end function;
 
 
+height:=function(Phi,betafil,gammafil,splitting,data)
+
+  // This function computes the p-adic height of a filtered phi-module given its Frobenius 
+  // matrix Phi and splitting of the Hodge filtration determined by gamma_fil, beta_fil.
+
+  p:=data`p; N:=data`N; g:=data`g;
+
+  Qp:=pAdicField(p,N);
+
+  betafil    := Vector(Qp,[0 : i in [1..g]] cat Eltseq(betafil));
+  gammafil   := ChangeRing(gammafil,Qp);
+
+  alpha1g    := Vector(Qp,g,[Phi[i+1,1]:i in [1..g]]);
+  alpha      := Vector(Qp,2*g,[Phi[i+1,1]:i in [1..2*g]]);
+  s1alphaphi := ChangeRing(alpha1g*Transpose(splitting),Qp);
+  s2alphaphi := alpha-alpha1g*Transpose(splitting);
+  gammaphi   := Phi[2*g+2,1];
+  betaphi    := Vector(Qp,6,[Phi[2*g+2,i+1]:i in [1..2*g]]);
+  
+  return gammaphi+gammafil-DotProduct(s1alphaphi,betaphi)-DotProduct(s2alphaphi,betafil);
+
+end function;
+
+
 

@@ -248,6 +248,6 @@ hodge_data:=function(data,denombasis,Z,bpt)
 
   // TODO analyse t-adic precision
 
-  return eta,beta,gamma;
+  return Vector(eta),Vector(beta),Vector(gamma);
 
 end function;
