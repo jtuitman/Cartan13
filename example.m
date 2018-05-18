@@ -1,4 +1,5 @@
 SetPath("./Coleman-1.3");
+
 load "coleman.m";
 load "frobenius.m";
 load "hodge.m";
@@ -41,7 +42,7 @@ for i:=1 to 3 do
   basis2[i]:=Coefficients(reduce_mod_Q_exact(omega[i+6]*s,Q));
 end for;
 
-// b0 cat b1 is the basis for H^1(X) given by omega[i]*dx/z.
+// basis0 cat basis1 is the basis for H^1(X) given by omega[i]*dx/z.
 
 data:=coleman_data(Q,p,N:useU:=true,basis0:=basis0,basis1:=basis1,basis2:=basis2);
 
@@ -76,7 +77,6 @@ Z1,A11:=hecke_corr(data,11,10:basis0:=basis0,basis1:=basis1);
 eta1,betafil1,gammafil1:=hodge_data(data,Z1,bpt); 
 
 G1:=frob_struc(data,Z1,eta1,[0,0]); // matrix of Frobenius structure on A_Z1(b)
-
 G1_list:=[**]; // evaluations of G1 at Teichmuellers of all good points (0 if bad)
 for i:=1 to #Qppoints do
   if is_bad(Qppoints[i],data) then
