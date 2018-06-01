@@ -27,6 +27,8 @@ omega[7]:=x^2/lc;
 omega[8]:=x*y/lc;
 omega[9]:=y^2/lc;
 
+// p should not be three, because of this choice of basis
+
 basis0:=[]; // first kind
 for i:=1 to 3 do
   basis0[i]:=Coefficients(reduce_mod_Q_exact(omega[i]*s,Q));
@@ -145,16 +147,50 @@ for i:=1 to #G2_list do
 end for;
 
 
-//////////////////
-// test heights //
-//////////////////
+///////////////////////////////////
+// fit equivariant bilinear form //
+///////////////////////////////////
 
-eqsplit:=Matrix(RationalField(),6,3,[ 1, 0, 0, 0, 1, 0, 0, 0, 1, 224/3, -880/3, 0, -880/3, -1696/3, 0, 0, 0, 0 ]);
 P1:=Qppoints[8];
 P2:=Qppoints[3];
 P3:=Qppoints[16];
 P5:=Qppoints[6];
 
+eqsplit:=Matrix(RationalField(),6,3,[ 1, 0, 0, 0, 1, 0, 0, 0, 1, 224/3, -880/3, 0, -880/3, -1696/3, 0, 0, 0, 0 ]); // equivariant splitting of Hodge filtration, put in by hand for now
 height1_P1:=height(PhiAZ1b[8],betafil1,gammafil1_list[8],eqsplit,data); 
 height1_P3:=height(PhiAZ1b[16],betafil1,gammafil1_list[16],eqsplit,data); 
 height1_P5:=height(PhiAZ1b[6],betafil1,gammafil1_list[6],eqsplit,data);
+
+_,A3:=hecke_corr(data,3,10:basis0:=basis0,basis1:=basis1);               // Hecke operator at 3 on H^1_dR
+A3_small:=ExtractBlock(A3,1,1,3,3);                                      // Hecke operator at 3 on H^0(Omega^1)
+K<alpha> := UnramifiedExtension(Qp, CharacteristicPolynomial(A3_small)); // End(J) \otimes QQ
+
+E1P5:=Vector(Qp,3,[PhiAZ1b[6][i+1,1]:i in [1..3]]);                      // AJ_b(P5) which generates H^0(Omega^1)^* over K                               
+basisH0star:=[];
+for i:=0 to 2 do
+  basisH0star:=Append(basisH0star,Eltseq(E1P5*(ChangeRing(A3_small,Qp)^i)));
+end for; 
+
+E1_E2_P1 := E1_tensor_E2(PhiAZ1b[8],betafil1,basisH0star,K,data);  // P1
+E1_E2_P3 := E1_tensor_E2(PhiAZ1b[16],betafil1,basisH0star,K,data); // P3
+E1_E2_P5 := E1_tensor_E2(PhiAZ1b[6],betafil1,basisH0star,K,data);  // P5
+
+
+//////////////////
+// test heights //
+//////////////////
+
+N:=ZeroMatrix(Qp,4,4);
+for i in [1..3] do
+  N[i,1] := Coefficient(E1_E2_P1, i); // P1
+  N[i,2] := Coefficient(E1_E2_P3, i); // P3
+  N[i,3] := Coefficient(E1_E2_P5, i); // P5
+  N[i,4] := Coefficient(E1_tensor_E2(PhiAZ2b[6],betafil2,basisH0star,K,data), i); // P5, wrt Z2
+end for;
+N[4,1] := height1_P1;
+N[4,2] := height1_P3;
+N[4,3] := height1_P5;
+N[4,4] := height(PhiAZ2b[6],betafil2,gammafil2_list[6],eqsplit,data); // P5, wrt Z2
+
+Determinant(N); // this should be zero
+

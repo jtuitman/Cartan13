@@ -197,4 +197,17 @@ height:=function(Phi,betafil,gammafil,splitting,data)
 end function;
 
 
+E1_tensor_E2:=function(Phi,betafil,basisH0star,K,data)
 
+  // TODO comment
+
+  g:=data`g; 
+
+  changebasis:=Matrix(basisH0star)^(-1);
+
+  E1 := Vector([Phi[i,1] : i in [2..g+1]])*changebasis; 
+  E2 := Vector([Phi[2*g+2,g+1+j] - betafil[j] : j in [1..g]])*changebasis;
+
+  return &+[E1[i]*K.1^(i-1) : i in [1,2,3]] * &+[E2[i]*K.1^(i-1) : i in [1,2,3]];
+
+end function;
