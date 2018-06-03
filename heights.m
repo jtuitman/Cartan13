@@ -173,6 +173,15 @@ function parallel_transport(P1,P2,Z,eta,data:prec:=0)
 end function;
 
 
+function parallel_transport_to_z(P,Z,eta,data:prec:=0)
+
+  // TODO
+
+  return 0;
+
+end function;
+
+
 height:=function(Phi,betafil,gammafil,splitting,data)
 
   // This function computes the p-adic height of a filtered phi-module given its Frobenius 
