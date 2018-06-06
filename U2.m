@@ -24,7 +24,7 @@ omega[2]:=-1/lc;
 omega[3]:=-y/lc;
 omega[4]:=(768/5*x^2*y-448/5*x*y^2-1536/5*x^2+96*x*y+16*y^2+2272/15*x-1648/15*y+1712/15)/lc;
 omega[5]:=(128/7*x^2*y^2-5056/35*x^2*y+576/35*x*y^2+7552/35*x^2-816/7*x*y+136/7*y^2+10736/105*x-1072/15*y-184/105)/lc;
-omega[6]:=(-448/5*x^2*y+288/5*x*y^2+896/5*x^2-80*x*y-8*y^2-2272/15*x+96/5*y-1432/5)/lc;
+omega[6]:=(-448/5*x^2*y+288/5*x*y^2+896/5*x^2-80*x*y-8*y^2-2272/15*x+96/5*y-1432/15)/lc; 
 omega[7]:=x^2/lc;
 omega[8]:=x*y/lc;
 omega[9]:=y^2/lc;
@@ -60,6 +60,6 @@ eta1,betafil1,gammafil1:=hodge_data(data,Z1,bpt);
 Z2,A7:=hecke_corr(data,7,10:basis0:=basis0,basis1:=basis1);
 eta2,betafil2,gammafil2:=hodge_data(data,Z2,bpt);
 
-print "eta1,betafil1,gammafil1","/n",eta1,betafil1,gammafil1;
-print "eta2,betafil2,gammafil2","/n",eta2,betafil2,gammafil2;
+print "eta1,betafil1,gammafil1","\n",eta1,betafil1,gammafil1;
+print "eta2,betafil2,gammafil2","\n",eta2,betafil2,gammafil2;
 
