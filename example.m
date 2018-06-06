@@ -201,10 +201,10 @@ Nend:=Floor(N/2);
 Qp:=pAdicField(p,Nend); // TODO analysis of p-adic precision loss, for now assuming floor(N/2) digits are correct
 S:=LaurentSeriesRing(Qp,prec);
 
-T1_list:=[**];
+F1_list:=[**];
 for i:=1 to numberofpoints do
   if G1_list[i] eq 0 then
-    T1_list[i]:=0;
+    F1_list[i]:=0;
   else
     T1:=ZeroMatrix(S,4,4);
     T1[1,1]:=height(PhiAZ1b_to_z[i],betafil1,gammafil1_list[i],eqsplit,data);
@@ -219,14 +219,14 @@ for i:=1 to numberofpoints do
       T1[3,j]:=Eltseq(E1_E2_P3)[j-1];
       T1[4,j]:=Eltseq(E1_E2_P5)[j-1];
     end for;
-    T1_list[i]:=T1;
+    F1_list[i]:=Determinant(T1);
   end if;
 end for;
 
-T2_list:=[**];
+F2_list:=[**];
 for i:=1 to numberofpoints do
   if G2_list[i] eq 0 then
-    T2_list[i]:=0;
+    F2_list[i]:=0;
   else
     T2:=ZeroMatrix(S,4,4);
     T2[1,1]:=height(PhiAZ2b_to_z[i],betafil2,gammafil2_list[i],eqsplit,data);
@@ -241,7 +241,7 @@ for i:=1 to numberofpoints do
       T2[3,j]:=Eltseq(E1_E2_P3)[j-1];
       T2[4,j]:=Eltseq(E1_E2_P5)[j-1];
     end for;
-    T2_list[i]:=T2;
+    F2_list[i]:=Determinant(T2);
   end if;
 end for;        
 
@@ -251,6 +251,43 @@ end for;
 ///////////////////////
 
 for i in [3,6,8,16] do
-  Evaluate(Determinant(T1_list[i]),0)+O(Qp!p^Nend);
-  Evaluate(Determinant(T2_list[i]),0)+O(Qp!p^Nend);
+  assert Valuation(Evaluate(F1_list[i],0)) ge Nend;
+  assert Valuation(Evaluate(F2_list[i],0)) ge Nend;
 end for;
+
+
+////////////////
+// find zeros //
+////////////////
+
+Qptt:=PowerSeriesRing(Qp);
+Zp:=pAdicRing(p,Precision(Qp));
+Zpt:=PolynomialRing(Zp);
+
+zero1_list:=[**];
+for i:=1 to numberofpoints do
+  if G1_list[i] eq 0 then
+    zero1_list[i]:=0;
+  else
+    f:=F1_list[i];
+    f:=Evaluate(Qptt!f,p*Qptt.1);
+    val:=Valuation(f);
+    f:=Zpt.1^val*(Zpt![Zp!c : c in Coefficients(f)]);
+    zero1_list[i]:=my_roots_Zpt(f);
+  end if;
+end for;
+
+zero2_list:=[**];
+for i:=1 to numberofpoints do
+  if G2_list[i] eq 0 then
+    zero2_list[i]:=0;
+  else
+    f:=F2_list[i];
+    f:=Evaluate(Qptt!f,p*Qptt.1);
+    val:=Valuation(f);
+    f:=Zpt.1^val*(Zpt![Zp!c : c in Coefficients(f)]);
+    zero2_list[i]:=my_roots_Zpt(f);
+  end if;
+end for;
+
+
