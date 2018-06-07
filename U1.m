@@ -172,7 +172,7 @@ end for;
 /////////////
 
 P1:=Qppoints[8];
-P2:=Qppoints[3];
+P2:=Qppoints[3]; // base point
 P3:=Qppoints[16];
 P5:=Qppoints[6];
 
@@ -184,7 +184,7 @@ height1_P5:=height(PhiAZ1b[6],betafil1,gammafil1_list[6],eqsplit,data);
 q:=3;
 
 _,Aq:=hecke_corr(data,q,10:basis0:=basis0,basis1:=basis1);                   // Hecke operator at q on H^1_dR
-Aq_small:=ExtractBlock(Aq,1,1,3,3);                                          // Hecke operator at q on H^0(Omega^1)
+Aq_small:=ExtractBlock(Aq,1,1,3,3);                                          // Hecke operator at q on H^0(Omega^1), A3 is wrong because of denominator 3 in basis, but A3_small is not affected
 m:=CharacteristicPolynomial(Aq_small);
 
 E1P5:=Vector(Qp,3,[PhiAZ1b[6][i+1,1]:i in [1..3]]);                          // AJ_b(P5) which generates H^0(Omega^1)^* over K                               
