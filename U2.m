@@ -78,7 +78,7 @@ end for;
 // first correspondence: //
 ///////////////////////////
 
-Z1:=Matrix(RationalField(),6,6,[ 0, -976, -1104, 10, -6, 18, 976, 0, -816, -3, 1, 3, 1104, 816, 0, -3, 3, -11, -10, 3, 3, 0, 0, 0, 6, -1, -3, 0, 0, 0, -18, -3, 11, 0, 0, 0 ]);
+Z1,A11:=hecke_corr(data,11,10:basis0:=basis0,basis1:=basis1);
 eta1,betafil1,gammafil1:=hodge_data(data,Z1,bpt); 
 
 G1:=frob_struc(data,Z1,eta1,[0,-1]); // matrix of Frobenius structure on A_Z1(b)
@@ -125,7 +125,7 @@ end for;
 // second correspondence: //
 ////////////////////////////
 
-Z2:=Matrix(RationalField(),6,6,[ 0, 112, -656, -6, 6, 6, -112, 0, -2576, 15, 9, 27, 656, 2576, 0, 3, 3, -3, 6, -15, -3, 0, 0, 0, -6, -9, -3, 0, 0, 0, -6, -27, 3, 0, 0, 0 ]);
+Z2,A7:=hecke_corr(data,7,10:basis0:=basis0,basis1:=basis1);
 eta2,betafil2,gammafil2:=hodge_data(data,Z2,bpt); 
 
 G2:=frob_struc(data,Z2,eta2,[0,-1]); // matrix of Frobenius structure on A_Z2(b)
