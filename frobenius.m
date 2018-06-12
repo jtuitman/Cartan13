@@ -9,7 +9,22 @@ hecke_corr:=function(data,q,N:basis0:=[],basis1:=[])
   // the Hecke operator A_q w.r.t. the basis of H^1(X) given by [b0,b1].
   // assumes that this basis is symplectic
 
-  Q:=data`Q; g:=data`g;
+  Q:=data`Q; g:=data`g; d:=Degree(Q);
+
+  v0:=Minimum(&cat[[Valuation(coef,q):coef in &cat[Coefficients(basis0[i][j]):j in [1..d]]]: i in [1..g]]); // valuation basis0
+  v1:=Minimum(&cat[[Valuation(coef,q):coef in &cat[Coefficients(basis1[i][j]):j in [1..d]]]: i in [1..g]]); // valuation basis1
+  v:=Minimum([v0,v1]);
+
+  // multiply by constant to remove denominator basis0 and basis1
+
+  if v lt 0 then
+    for i:=1 to g do
+      for j:=1 to d do
+        basis0[i][j]:=q^(-v)*basis0[i][j];
+        basis1[i][j]:=q^(-v)*basis1[i][j];
+      end for;
+    end for;
+  end if;
 
   data:=coleman_data(Q,q,N:basis0:=basis0,basis1:=basis1);
 

@@ -29,7 +29,7 @@ omega[7]:=x^2/lc;
 omega[8]:=x*y/lc;
 omega[9]:=y^2/lc;
 
-// p should not be 3,5,7 because of this choice of basis
+// p should not be 3,5,7 because of denominator in basis
 
 basis0:=[]; // first kind
 for i:=1 to 3 do
