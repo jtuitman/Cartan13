@@ -49,6 +49,8 @@ end for;
 
 data:=coleman_data(Q,p,N:useU:=true,basis0:=basis0,basis1:=basis1,basis2:=basis2);
 
+g:=data`g;
+
 FF:=fun_field(data);
 
 bpt:=Zeros(FF.1)[1]; // point [0,0] as place on the function field
@@ -290,4 +292,80 @@ for i:=1 to numberofpoints do
   end if;
 end for;
 
+
+///////////////
+// bad point //
+///////////////
+
+data2:=coleman_data(Q,p,N:useU:=false,basis0:=basis0,basis1:=basis1,basis2:=basis2);
+
+P0:=Qppoints[20]; // finite bad point
+
+singleints:=coleman_integrals_on_basis(P2,P0,data2:e:=100); // checked: OK
+
+//////////
+/// Z1 ///
+//////////
+
+correctionfactor1:=ZeroMatrix(Qp,2*g+2,2*g+2);
+for i:=1 to 6 do
+  correctionfactor1[2*g+2,i+1]:=-2*Eltseq(ChangeRing(singleints,Qp)*ChangeRing(Z1,Qp))[i];
+end for;
+
+PhiAZ1P2:=PhiAZ1b[3];
+PhiAZ1P0:=PhiAZ1P2*correctionfactor1; // left or right?
+PhiAZ1P0_to_z,xt,bt:=parallel_transport_to_z(P0,Z1,eta1,data:prec:=prec);
+
+T1:=ZeroMatrix(S,4,4);
+T1[1,1]:=height(PhiAZ1b_to_z[i],betafil1,0,eqsplit,data);
+for j:=2 to 4 do
+  T1[1,j]:=Eltseq(E1_tensor_E2(PhiAZ1P0_to_z,betafil1,basisH0star,m,data))[j-1];
+end for;
+T1[2,1]:=height1_P1;
+T1[3,1]:=height1_P3;
+T1[4,1]:=height1_P5; 
+for j:=2 to 4 do
+  T1[2,j]:=Eltseq(E1_E2_P1)[j-1];
+  T1[3,j]:=Eltseq(E1_E2_P3)[j-1];
+  T1[4,j]:=Eltseq(E1_E2_P5)[j-1];
+end for;
+F1_list[20]:=Determinant(T1);
+f:=F1_list[20];
+f:=Evaluate(Qptt!f,p*Qptt.1);
+val:=Valuation(f);
+f:=Zpt.1^val*(Zpt![Zp!c : c in Coefficients(f)]);
+zero1_list[20]:=my_roots_Zpt(f);
+
+//////////
+/// Z2 ///
+//////////
+
+correctionfactor2:=ZeroMatrix(Qp,2*g+2,2*g+2);
+for i:=1 to 6 do
+  correctionfactor2[2*g+2,i+1]:=-2*Eltseq(ChangeRing(singleints,Qp)*ChangeRing(Z2,Qp))[i];
+end for;
+
+PhiAZ2P2:=PhiAZ2b[3];
+PhiAZ2P0:=PhiAZ2P2*correctionfactor2; // left or right?
+PhiAZ2P0_to_z:=parallel_transport_to_z(P0,Z2,eta2,data:prec:=prec);
+
+T2:=ZeroMatrix(S,4,4);
+T2[1,1]:=height(PhiAZ2P0_to_z,betafil1,0,eqsplit,data);
+for j:=2 to 4 do
+  T2[1,j]:=Eltseq(E1_tensor_E2(PhiAZ1P0_to_z,betafil1,basisH0star,m,data))[j-1];
+end for;
+T2[2,1]:=height1_P1;
+T2[3,1]:=height1_P3;
+T2[4,1]:=height1_P5; 
+for j:=2 to 4 do
+  T2[2,j]:=Eltseq(E1_E2_P1)[j-1];
+  T2[3,j]:=Eltseq(E1_E2_P3)[j-1];
+  T2[4,j]:=Eltseq(E1_E2_P5)[j-1];
+end for;
+F2_list[20]:=Determinant(T2);
+f:=F2_list[20];
+f:=Evaluate(Qptt!f,p*Qptt.1);
+val:=Valuation(f);
+f:=Zpt.1^val*(Zpt![Zp!c : c in Coefficients(f)]);
+zero2_list[20]:=my_roots_Zpt(f);
 

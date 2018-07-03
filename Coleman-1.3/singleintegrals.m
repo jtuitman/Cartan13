@@ -1896,8 +1896,8 @@ coleman_integrals_on_basis:=function(P1,P2,data:e:=1)
   IP1P2:=IS1S2+ChangeRing(tinyP1toS1,K)-ChangeRing(tinyP2toS2,K);
   IP1P2,Nround:=round_to_Qp(IP1P2);
 
-  assert Nround ge NIP1P2;                          // Check that rounding error is within error bound.
-  
+  assert Nround ge NIP1P2;                          
+
   NIP1P2:=Ceiling(NIP1P2);
 
   for i:=1 to #basis do
