@@ -313,11 +313,11 @@ for i:=1 to 6 do
 end for;
 
 PhiAZ1P2:=PhiAZ1b[3];
-PhiAZ1P0:=PhiAZ1P2*correctionfactor1; // left or right?
-PhiAZ1P0_to_z,xt,bt:=parallel_transport_to_z(P0,Z1,eta1,data:prec:=prec);
+PhiAZ1P0:=PhiAZ1P2*correctionfactor1;
+PhiAZ1P0_to_z,xt,bt:=parallel_transport_to_z(P0,Z1,eta1,data:prec:=prec)*PhiAZ1P0;
 
 T1:=ZeroMatrix(S,4,4);
-T1[1,1]:=height(PhiAZ1b_to_z[i],betafil1,0,eqsplit,data);
+T1[1,1]:=height(PhiAZ1P0_to_z,betafil1,0,eqsplit,data);
 for j:=2 to 4 do
   T1[1,j]:=Eltseq(E1_tensor_E2(PhiAZ1P0_to_z,betafil1,basisH0star,m,data))[j-1];
 end for;
@@ -347,12 +347,12 @@ end for;
 
 PhiAZ2P2:=PhiAZ2b[3];
 PhiAZ2P0:=PhiAZ2P2*correctionfactor2; // left or right?
-PhiAZ2P0_to_z:=parallel_transport_to_z(P0,Z2,eta2,data:prec:=prec);
+PhiAZ2P0_to_z:=parallel_transport_to_z(P0,Z2,eta2,data:prec:=prec)*PhiAZ2P0;
 
 T2:=ZeroMatrix(S,4,4);
 T2[1,1]:=height(PhiAZ2P0_to_z,betafil1,0,eqsplit,data);
 for j:=2 to 4 do
-  T2[1,j]:=Eltseq(E1_tensor_E2(PhiAZ1P0_to_z,betafil1,basisH0star,m,data))[j-1];
+  T2[1,j]:=Eltseq(E1_tensor_E2(PhiAZ2P0_to_z,betafil1,basisH0star,m,data))[j-1];
 end for;
 T2[2,1]:=height1_P1;
 T2[3,1]:=height1_P3;
