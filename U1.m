@@ -307,14 +307,14 @@ singleints:=coleman_integrals_on_basis(P2,P0,data2:e:=100); // checked: OK
 /// Z1 ///
 //////////
 
-correctionfactor1:=ZeroMatrix(Qp,2*g+2,2*g+2);
+correctionfactor1:=IdentityMatrix(Qp,2*g+2);
 for i:=1 to 6 do
   correctionfactor1[2*g+2,i+1]:=-2*Eltseq(ChangeRing(singleints,Qp)*ChangeRing(Z1,Qp))[i];
 end for;
 
 PhiAZ1P2:=PhiAZ1b[3];
 PhiAZ1P0:=PhiAZ1P2*correctionfactor1;
-PhiAZ1P0_to_z,xt,bt:=parallel_transport_to_z(P0,Z1,eta1,data:prec:=prec)*PhiAZ1P0;
+PhiAZ1P0_to_z:=parallel_transport_to_z(P0,Z1,eta1,data:prec:=prec)*PhiAZ1P0;
 
 T1:=ZeroMatrix(S,4,4);
 T1[1,1]:=height(PhiAZ1P0_to_z,betafil1,0,eqsplit,data);
@@ -340,7 +340,7 @@ zero1_list[20]:=my_roots_Zpt(f);
 /// Z2 ///
 //////////
 
-correctionfactor2:=ZeroMatrix(Qp,2*g+2,2*g+2);
+correctionfactor2:=IdentityMatrix(Qp,2*g+2);
 for i:=1 to 6 do
   correctionfactor2[2*g+2,i+1]:=-2*Eltseq(ChangeRing(singleints,Qp)*ChangeRing(Z2,Qp))[i];
 end for;
