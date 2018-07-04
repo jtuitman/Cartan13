@@ -178,16 +178,19 @@ P2:=Qppoints[3]; // base point
 P3:=Qppoints[16];
 P5:=Qppoints[6];
 
+q:=3;
+
+_,Aq:=hecke_corr(data,q,20:basis0:=basis0,basis1:=basis1);                   // Hecke operator at q on H^1_dR
+Aq_small:=ExtractBlock(Aq,1,1,3,3);                                          // Hecke operator at q on H^0(Omega^1)
+m:=CharacteristicPolynomial(Aq_small);
+
 eqsplit:=Matrix(RationalField(),6,3,[ 1, 0, 0, 0, 1, 0, 0, 0, 1, 224/3, -880/3, 0, -880/3, -1696/3, 0, 0, 0, 0 ]); // equivariant splitting of Hodge filtration, put in by hand for now
+
+assert IsZero(eqsplit*ExtractBlock(Aq,4,4,3,3) - Transpose(Aq)*eqsplit); // Test equivariant splitting of Hodge filtration.
+
 height1_P1:=height(PhiAZ1b[8],betafil1,gammafil1_list[8],eqsplit,data); 
 height1_P3:=height(PhiAZ1b[16],betafil1,gammafil1_list[16],eqsplit,data); 
 height1_P5:=height(PhiAZ1b[6],betafil1,gammafil1_list[6],eqsplit,data);
-
-q:=3;
-
-_,Aq:=hecke_corr(data,q,10:basis0:=basis0,basis1:=basis1);                   // Hecke operator at q on H^1_dR
-Aq_small:=ExtractBlock(Aq,1,1,3,3);                                          // Hecke operator at q on H^0(Omega^1), A3 is wrong because of denominator 3 in basis, but A3_small is not affected
-m:=CharacteristicPolynomial(Aq_small);
 
 E1P5:=Vector(Qp,3,[PhiAZ1b[6][i+1,1]:i in [1..3]]);                          // AJ_b(P5) which generates H^0(Omega^1)^* over K                               
 basisH0star:=[];
@@ -200,7 +203,7 @@ E1_E2_P3 := E1_tensor_E2(PhiAZ1b[16],betafil1,basisH0star,m,data); // P3
 E1_E2_P5 := E1_tensor_E2(PhiAZ1b[6],betafil1,basisH0star,m,data);  // P5
 
 Nend:=Floor(N/2);
-Qp:=pAdicField(p,Nend); // TODO analysis of p-adic precision loss, for now assuming floor(N/2) digits are correct
+Qp:=pAdicField(p,Nend); // TODO For now assuming floor(N/2) digits are correct
 S:=LaurentSeriesRing(Qp,prec);
 
 F1_list:=[**];
@@ -346,7 +349,7 @@ for i:=1 to 6 do
 end for;
 
 PhiAZ2P2:=PhiAZ2b[3];
-PhiAZ2P0:=PhiAZ2P2*correctionfactor2; // left or right?
+PhiAZ2P0:=PhiAZ2P2*correctionfactor2;
 PhiAZ2P0_to_z:=parallel_transport_to_z(P0,Z2,eta2,data:prec:=prec)*PhiAZ2P0;
 
 T2:=ZeroMatrix(S,4,4);
