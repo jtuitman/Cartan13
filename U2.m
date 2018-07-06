@@ -6,7 +6,6 @@ load "hodge.m";
 load "heights.m";
 
 Q:=-16*x^3*y+32*x^3+24*x^2*y^2-40*x^2*y-32*x^2-10*x*y^3+10*x*y^2+26*x*y+6*x+y^4-6*y^2+5; // x^4*Evaluate(Q,[1/x,y/x])
-
 p:=17;      // prime number p
 N:=20;      // initial p-adic precision
 prec:=25;   // t-adic precision used in expansions
@@ -199,7 +198,7 @@ E1_E2_P3 := E1_tensor_E2(PhiAZ1b[9],betafil1,basisH0star,m,data);  // P3
 E1_E2_P4 := E1_tensor_E2(PhiAZ1b[6],betafil1,basisH0star,m,data);  // P4
 
 Nend:=Floor(N/2);
-Qp:=pAdicField(p,Nend); // TODO analysis of p-adic precision loss, for now assuming floor(N/2) digits are correct
+Qp:=pAdicField(p,Nend); // TODO For now assuming floor(N/2) digits are correct
 S:=LaurentSeriesRing(Qp,prec);
 
 F1_list:=[**];
