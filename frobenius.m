@@ -11,8 +11,18 @@ hecke_corr:=function(data,q,N:basis0:=[],basis1:=[])
 
   Q:=data`Q; g:=data`g; d:=Degree(Q);
 
-  v0:=Minimum(&cat[[Valuation(coef,q):coef in &cat[Coefficients(basis0[i][j]):j in [1..d]]]: i in [1..g]]); // valuation basis0
-  v1:=Minimum(&cat[[Valuation(coef,q):coef in &cat[Coefficients(basis1[i][j]):j in [1..d]]]: i in [1..g]]); // valuation basis1
+  if basis0 ne [] then
+    v0:=Minimum(&cat[[Valuation(coef,q):coef in &cat[Coefficients(basis0[i][j]):j in [1..d]]]: i in [1..g]]); // valuation basis0
+  else
+    v0:=0;
+  end if;
+
+  if basis1 ne [] then
+    v1:=Minimum(&cat[[Valuation(coef,q):coef in &cat[Coefficients(basis1[i][j]):j in [1..d]]]: i in [1..g]]); // valuation basis1
+  else
+    v1:=0;
+  end if;
+
   v:=Minimum([v0,v1]);
 
   // multiply by constant to remove denominator basis0 and basis1
@@ -89,9 +99,9 @@ frob_struc:=function(data,Z,eta,bpt)
     fRlist[i]:=fRlist[i]-eval_R(fRlist[i],bpt,r); // make sure that f_i(bpt) = 0 
   end for;
 
-  // The matrix of Frobenius on H^1(X) is the 6x6 top left corner of the matrix of Frobenius on H^1(U):
+  // The matrix of Frobenius on H^1(X) is the 2gx2g top left corner of the matrix of Frobenius on H^1(U):
 
-  FH1X:=ZeroMatrix(RationalField(),6,6);
+  FH1X:=ZeroMatrix(RationalField(),2*g,2*g);
   for i:=1 to 2*g do
     for j:=1 to 2*g do
       FH1X[i,j]:=FH1U[i,j];
@@ -214,7 +224,7 @@ frob_struc:=function(data,Z,eta,bpt)
   for i:=1 to 2*g do
     G[i+1,1]:=fRlist[i];
   end for;
-  G[8,1]:=hR;
+  G[2*g+2,1]:=hR;
   for i:=1 to 2*g do
     for j:=1 to 2*g do
       G[i+1,j+1]:=FH1X[i,j];
