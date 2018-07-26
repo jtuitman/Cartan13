@@ -309,7 +309,7 @@ height:=function(Phi,betafil,gammafil,splitting,data)
   s1alphaphi := ChangeRing(alpha1g*Transpose(splitting),S);
   s2alphaphi := alpha-alpha1g*Transpose(splitting);
   gammaphi   := Phi[2*g+2,1];
-  betaphi    := Vector(S,6,[Phi[2*g+2,i+1]:i in [1..2*g]]);
+  betaphi    := Vector(S,2*g,[Phi[2*g+2,i+1]:i in [1..2*g]]);
   
   return gammaphi-gammafil-DotProduct(s1alphaphi,betaphi)-DotProduct(s2alphaphi,betafil);
 
@@ -331,6 +331,6 @@ E1_tensor_E2:=function(Phi,betafil,basisH0star,m,data)
   E1 := Vector(Salpha,[Phi[i,1] : i in [2..g+1]])*changebasis; 
   E2 := Vector(Salpha,[Phi[2*g+2,g+1+j] - betafil[j] : j in [1..g]])*changebasis;
 
-  return &+[E1[i]*Salpha.1^(i-1) : i in [1,2,3]] * &+[E2[i]*Salpha.1^(i-1) : i in [1,2,3]];
+  return &+[E1[i]*Salpha.1^(i-1) : i in [1..g]] * &+[E2[i]*Salpha.1^(i-1) : i in [1..g]];
 
 end function;
