@@ -7,7 +7,7 @@ load "heights.m";
 
 Q:=y^4 + 5*x^4 - 6*x^2*y^2 + 6*x^3 + 26*x^2*y + 10*x*y^2 - 10*y^3 - 32*x^2 -40*x*y + 24*y^2 + 32*x - 16*y; // equation of the curve
 p:=17;      // prime number p
-N:=20;      // initial p-adic precision
+N:=10;      // initial p-adic precision
 prec:=25;   // t-adic precision used in expansions
 
 Qp:=pAdicField(p,N);
@@ -113,11 +113,14 @@ for i:=1 to numberofpoints do
 end for;
 
 gammafil1_list:=[**]; // evaluations of gammafil1 at all good points (0 if bad)
+gammafil1_listb_to_z:=[**]; // evaluations of gammafil1 at all good points (0 if bad)
 for i:=1 to numberofpoints do
+    gammafil1_listb_to_z[i]:=evalf0_bad(Qppoints[i],gammafil1,data,N,prec);
   if G1_list[i] ne 0 then
     gammafil1_list[i]:=evalf0(ChangeRing(gammafil1,LaurentSeriesRing(BaseRing(gammafil1))),Qppoints[i],data);
   else
     gammafil1_list[i]:=0;
+//    gammafil1_listb_to_z[i]:=0;
   end if;
 end for;
 
@@ -160,7 +163,9 @@ for i:=1 to numberofpoints do
 end for;
 
 gammafil2_list:=[**]; // evaluations of gammafil2 at Teichmuellers of all good points (0 if bad)
+gammafil2_listb_to_z:=[**];
 for i:=1 to numberofpoints do
+    gammafil2_listb_to_z[i]:=evalf0_bad(Qppoints[i],gammafil2,data,N,prec);
   if G2_list[i] ne 0 then
     gammafil2_list[i]:=evalf0(ChangeRing(gammafil2,LaurentSeriesRing(BaseRing(gammafil2))),Qppoints[i],data);
   else
@@ -212,7 +217,7 @@ for i:=1 to numberofpoints do
     F1_list[i]:=0;
   else
     T1:=ZeroMatrix(S,4,4);
-    T1[1,1]:=height(PhiAZ1b_to_z[i],betafil1,gammafil1_list[i],eqsplit,data);
+    T1[1,1]:=height(PhiAZ1b_to_z[i],betafil1,gammafil1_listb_to_z[i],eqsplit,data);
     for j:=2 to 4 do
       T1[1,j]:=Eltseq(E1_tensor_E2(PhiAZ1b_to_z[i],betafil1,basisH0star,m,data))[j-1];
     end for;
@@ -234,6 +239,7 @@ for i:=1 to numberofpoints do
     F2_list[i]:=0;
   else
     T2:=ZeroMatrix(S,4,4);
+    T2[1,1]:=height(PhiAZ2b_to_z[i],betafil2,gammafil2_listb_to_z[i],eqsplit,data);
     T2[1,1]:=height(PhiAZ2b_to_z[i],betafil2,gammafil2_list[i],eqsplit,data);
     for j:=2 to 4 do
       T2[1,j]:=Eltseq(E1_tensor_E2(PhiAZ2b_to_z[i],betafil2,basisH0star,m,data))[j-1];
@@ -320,7 +326,7 @@ PhiAZ1P0:=PhiAZ1P2*correctionfactor1;
 PhiAZ1P0_to_z:=parallel_transport_to_z(P0,Z1,eta1,data:prec:=prec)*PhiAZ1P0;
 
 T1:=ZeroMatrix(S,4,4);
-T1[1,1]:=height(PhiAZ1P0_to_z,betafil1,0,eqsplit,data);
+T1[1,1]:=height(PhiAZ1P0_to_z,betafil1,gammafil1_listb_to_z[20]-Evaluate(gammafil1_listb_to_z[20],0),eqsplit,data);
 for j:=2 to 4 do
   T1[1,j]:=Eltseq(E1_tensor_E2(PhiAZ1P0_to_z,betafil1,basisH0star,m,data))[j-1];
 end for;
@@ -353,7 +359,7 @@ PhiAZ2P0:=PhiAZ2P2*correctionfactor2;
 PhiAZ2P0_to_z:=parallel_transport_to_z(P0,Z2,eta2,data:prec:=prec)*PhiAZ2P0;
 
 T2:=ZeroMatrix(S,4,4);
-T2[1,1]:=height(PhiAZ2P0_to_z,betafil1,0,eqsplit,data);
+T2[1,1]:=height(PhiAZ2P0_to_z,betafil2,gammafil2_listb_to_z[20]-Evaluate(gammafil2_listb_to_z[20],0),eqsplit,data);
 for j:=2 to 4 do
   T2[1,j]:=Eltseq(E1_tensor_E2(PhiAZ2P0_to_z,betafil1,basisH0star,m,data))[j-1];
 end for;
