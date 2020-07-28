@@ -111,7 +111,9 @@ for i:=1 to numberofpoints do
 end for;
 
 gammafil1_list:=[**]; // evaluations of gammafil1 at all good points (0 if bad)
+gammafil1_listb_to_z:=[**]; // evaluations of gammafil1 at all good points (0 if bad)
 for i:=1 to numberofpoints do
+    gammafil1_listb_to_z[i]:=evalf0_bad(Qppoints[i],gammafil1,data,N,prec);
   if G1_list[i] ne 0 then
     gammafil1_list[i]:=evalf0(ChangeRing(gammafil1,LaurentSeriesRing(BaseRing(gammafil1))),Qppoints[i],data);
   else
@@ -158,7 +160,9 @@ for i:=1 to numberofpoints do
 end for;
 
 gammafil2_list:=[**]; // evaluations of gammafil2 at Teichmuellers of all good points (0 if bad)
+gammafil2_listb_to_z:=[**];
 for i:=1 to numberofpoints do
+  gammafil2_listb_to_z[i]:=evalf0_bad(Qppoints[i],gammafil2,data,N,prec);
   if G2_list[i] ne 0 then
     gammafil2_list[i]:=evalf0(ChangeRing(gammafil2,LaurentSeriesRing(BaseRing(gammafil2))),Qppoints[i],data);
   else
@@ -183,7 +187,7 @@ height1_P4:=height(PhiAZ1b[6],betafil1,gammafil1_list[6],eqsplit,data);
 
 q:=3;
 
-_,Aq:=hecke_corr(data,q,10:basis0:=basis0,basis1:=basis1);                   // Hecke operator at q on H^1_dR
+_,Aq:=hecke_corr(data,q,20:basis0:=basis0,basis1:=basis1);                   // Hecke operator at q on H^1_dR
 Aq_small:=ExtractBlock(Aq,1,1,3,3);                                          // Hecke operator at q on H^0(Omega^1), A3 is wrong because of denominator 3 in basis, but A3_small is not affected
 m:=CharacteristicPolynomial(Aq_small);
 
@@ -207,7 +211,7 @@ for i:=1 to numberofpoints do
     F1_list[i]:=0;
   else
     T1:=ZeroMatrix(S,4,4);
-    T1[1,1]:=height(PhiAZ1b_to_z[i],betafil1,gammafil1_list[i],eqsplit,data);
+    T1[1,1]:=height(PhiAZ1b_to_z[i],betafil1,gammafil1_listb_to_z[i],eqsplit,data);
     for j:=2 to 4 do
       T1[1,j]:=Eltseq(E1_tensor_E2(PhiAZ1b_to_z[i],betafil1,basisH0star,m,data))[j-1];
     end for;
@@ -229,7 +233,7 @@ for i:=1 to numberofpoints do
     F2_list[i]:=0;
   else
     T2:=ZeroMatrix(S,4,4);
-    T2[1,1]:=height(PhiAZ2b_to_z[i],betafil2,gammafil2_list[i],eqsplit,data);
+    T2[1,1]:=height(PhiAZ2b_to_z[i],betafil2,gammafil2_listb_to_z[i],eqsplit,data);
     for j:=2 to 4 do
       T2[1,j]:=Eltseq(E1_tensor_E2(PhiAZ2b_to_z[i],betafil2,basisH0star,m,data))[j-1];
     end for;
