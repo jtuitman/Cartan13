@@ -339,17 +339,15 @@ evalf0_bad:=function(P,g,data,N,prec)
 
   // expands the algebraic function g with respect to the chosen parameter at P.
   // the parameter is the same as in parallel_transport_to_z.
-  //x0:=P`x; b:=P`b; Q:=data`Q; p:=data`p; N:=data`N; basis:=data`basis; g:=data`g; r:=data`r; W0:=data`W0; Winf:=data`Winf;
-//  d:=Degree(Q); lc_r:=LeadingCoefficient(r); W:=Winf*W0^(-1); K:=Parent(x0);
+  // x0:=P`x; b:=P`b; Q:=data`Q; p:=data`p; N:=data`N; basis:=data`basis; g:=data`g; r:=data`r; W0:=data`W0; Winf:=data`Winf;
+  // d:=Degree(Q); lc_r:=LeadingCoefficient(r); W:=Winf*W0^(-1); K:=Parent(x0);
 
-  //P1:=P; // TODO: on a finite bad disk, make sure to take local parameters centered at the (very) bad point.
-  //x1:=P1`x;
   p:=data`p;
   xt,bt,index:=local_coord(P,prec,data); 
-//  print bt,Parent(bt);
 
   Qt<t>:=LaurentSeriesRing(pAdicField(p,N),prec);
   xt:=Qt!xt;
   bt:=[Qt!bt[i]:i in [1..#bt]];
+
   return &+[Evaluate(g[i],xt)*bt[i]:i in [1..NumberOfColumns(g)]];
 end function;
