@@ -7,7 +7,7 @@ load "heights.m";
 
 Q:=y^4 + 5*x^4 - 6*x^2*y^2 + 6*x^3 + 26*x^2*y + 10*x*y^2 - 10*y^3 - 32*x^2 -40*x*y + 24*y^2 + 32*x - 16*y; // equation of the curve
 p:=17;      // prime number p
-N:=10;      // initial p-adic precision
+N:=20;      // initial p-adic precision
 prec:=25;   // t-adic precision used in expansions
 
 Qp:=pAdicField(p,N);
@@ -48,8 +48,6 @@ end for;
 // basis0 cat basis1 is the basis for H^1(X) given by omega[i]*dx/z.
 
 data:=coleman_data(Q,p,N:useU:=true,basis0:=basis0,basis1:=basis1,basis2:=basis2);
-
-g:=data`g;
 
 FF:=fun_field(data);
 
@@ -120,7 +118,6 @@ for i:=1 to numberofpoints do
     gammafil1_list[i]:=evalf0(ChangeRing(gammafil1,LaurentSeriesRing(BaseRing(gammafil1))),Qppoints[i],data);
   else
     gammafil1_list[i]:=0;
-//    gammafil1_listb_to_z[i]:=0;
   end if;
 end for;
 
@@ -165,7 +162,7 @@ end for;
 gammafil2_list:=[**]; // evaluations of gammafil2 at Teichmuellers of all good points (0 if bad)
 gammafil2_listb_to_z:=[**];
 for i:=1 to numberofpoints do
-    gammafil2_listb_to_z[i]:=evalf0_bad(Qppoints[i],gammafil2,data,N,prec);
+  gammafil2_listb_to_z[i]:=evalf0_bad(Qppoints[i],gammafil2,data,N,prec);
   if G2_list[i] ne 0 then
     gammafil2_list[i]:=evalf0(ChangeRing(gammafil2,LaurentSeriesRing(BaseRing(gammafil2))),Qppoints[i],data);
   else
@@ -183,19 +180,18 @@ P2:=Qppoints[3]; // base point
 P3:=Qppoints[16];
 P5:=Qppoints[6];
 
+eqsplit:=Matrix(RationalField(),6,3,[ 1, 0, 0, 0, 1, 0, 0, 0, 1, 224/3, -880/3, 0, -880/3, -1696/3, 0, 0, 0, 0 ]); // equivariant splitting of Hodge filtration, put in by hand for now
+height1_P1:=height(PhiAZ1b[8],betafil1,gammafil1_list[8],eqsplit,data); 
+height1_P3:=height(PhiAZ1b[16],betafil1,gammafil1_list[16],eqsplit,data); 
+height1_P5:=height(PhiAZ1b[6],betafil1,gammafil1_list[6],eqsplit,data);
+
 q:=3;
 
 _,Aq:=hecke_corr(data,q,20:basis0:=basis0,basis1:=basis1);                   // Hecke operator at q on H^1_dR
 Aq_small:=ExtractBlock(Aq,1,1,3,3);                                          // Hecke operator at q on H^0(Omega^1)
 m:=CharacteristicPolynomial(Aq_small);
 
-eqsplit:=Matrix(RationalField(),6,3,[ 1, 0, 0, 0, 1, 0, 0, 0, 1, 224/3, -880/3, 0, -880/3, -1696/3, 0, 0, 0, 0 ]); // equivariant splitting of Hodge filtration, put in by hand for now
-
-assert IsZero(eqsplit*ExtractBlock(Aq,4,4,3,3) - Transpose(Aq)*eqsplit); // Test equivariant splitting of Hodge filtration.
-
-height1_P1:=height(PhiAZ1b[8],betafil1,gammafil1_list[8],eqsplit,data); 
-height1_P3:=height(PhiAZ1b[16],betafil1,gammafil1_list[16],eqsplit,data); 
-height1_P5:=height(PhiAZ1b[6],betafil1,gammafil1_list[6],eqsplit,data);
+assert IsZero(eqsplit*ExtractBlock(Aq,4,4,3,3) - Transpose(Aq)*eqsplit);     // Test equivariant splitting of Hodge filtration
 
 E1P5:=Vector(Qp,3,[PhiAZ1b[6][i+1,1]:i in [1..3]]);                          // AJ_b(P5) which generates H^0(Omega^1)^* over K                               
 basisH0star:=[];
@@ -240,7 +236,6 @@ for i:=1 to numberofpoints do
   else
     T2:=ZeroMatrix(S,4,4);
     T2[1,1]:=height(PhiAZ2b_to_z[i],betafil2,gammafil2_listb_to_z[i],eqsplit,data);
-    T2[1,1]:=height(PhiAZ2b_to_z[i],betafil2,gammafil2_list[i],eqsplit,data);
     for j:=2 to 4 do
       T2[1,j]:=Eltseq(E1_tensor_E2(PhiAZ2b_to_z[i],betafil2,basisH0star,m,data))[j-1];
     end for;
@@ -307,15 +302,14 @@ end for;
 ///////////////
 
 data2:=coleman_data(Q,p,N:useU:=false,basis0:=basis0,basis1:=basis1,basis2:=basis2);
-
 P0:=Qppoints[20]; // finite bad point
-
-singleints:=coleman_integrals_on_basis(P2,P0,data2:e:=100); // checked: OK
+singleints:=coleman_integrals_on_basis(P2,P0,data2:e:=100);
 
 //////////
 /// Z1 ///
 //////////
 
+g:=data`g;
 correctionfactor1:=IdentityMatrix(Qp,2*g+2);
 for i:=1 to 6 do
   correctionfactor1[2*g+2,i+1]:=-2*Eltseq(ChangeRing(singleints,Qp)*ChangeRing(Z1,Qp))[i];
